@@ -9,6 +9,7 @@ export const AuthProvider = ({ children }) => {
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -20,8 +21,14 @@ export const AuthProvider = ({ children }) => {
   }, []);
   
   const login = async (email, password) => {
-    await signInWithEmailAndPassword(auth, email, password);
-    setUser(auth.currentUser);
+    setError(null)
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      setUser(userCredential.user); 
+      return userCredential.user;
+    } catch (err) {
+      setError(err); 
+    }
   };
   
   const logout = async () => {
@@ -30,7 +37,7 @@ export const AuthProvider = ({ children }) => {
   };
   
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, loading, error }}>
       {children}
     </AuthContext.Provider>
   );

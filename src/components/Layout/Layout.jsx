@@ -1,15 +1,9 @@
-import React, { useState } from "react";
-import { Outlet, Navigate } from "react-router";
+import React from "react";
+import { Outlet} from "react-router";
 
 import './Layout.css'
 
 const Layout = () => {
-
-  const [authenticated, setAuthenticated] = useState(false);
-
-  if (!authenticated) {
-    return <Navigate to="/login" replace />;
-  }
 
   return (
  <>
@@ -22,7 +16,9 @@ const Layout = () => {
       <li></li>
     </ul>
   </nav>
+  <main>
     <Outlet/>
+  </main>
   </div>;
  </>
   ) 

@@ -1,5 +1,5 @@
 import { db } from '../config/firebaseConfig'; 
-import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, deleteDoc, doc, getDoc } from 'firebase/firestore';
 
 const CLIENTS_COLLECTION = 'clients';
 
@@ -12,7 +12,21 @@ export const getClients = async () => {
   }
 };
 
-// Add a new client
+export const getClientById = async (clientId) => {
+  try {
+    const docRef = doc(db, CLIENTS_COLLECTION, clientId);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      return { id: docSnap.id, ...docSnap.data() };
+    } else {
+      throw new Error('Client not found');
+    }
+  } catch (error) {
+    throw new Error('Error fetching client');
+  }
+};
+
 export const addClient = async (clientData) => {
   try {
     const docRef = await addDoc(collection(db, CLIENTS_COLLECTION), clientData);
@@ -22,7 +36,6 @@ export const addClient = async (clientData) => {
   }
 };
 
-// Delete a client
 export const deleteClient = async (clientId) => {
   try {
     await deleteDoc(doc(db, CLIENTS_COLLECTION, clientId));

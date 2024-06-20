@@ -42,74 +42,9 @@
 .login-title {
   font-size: 5rem;
   font-weight: 500;
-  width: 60%;
+  width: 75%;
   color: #9e9d9d;
   text-align: center;
 }
 
-.login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-  width: 60%;
-  padding: 1rem;
-}
 
-.input-group {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-.input-group label {
-  color: #9e9d9de3;
-}
-
-.input-group input[type="text"],
-.input-group input[type="password"] {
-  border: none;
-  border-bottom: 1px solid #9e9d9d;
-  padding: 0.5rem;
-}
-
-.checkbox {
-  flex-direction: row;
-  gap: 0.5rem;
-}
-
-.button-container {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  width: 100%;
-  gap: 1rem;
-  margin-top: 2rem;
-}
-
-.sign-in-button{
-  padding: 1rem 3rem;
-  border-radius: 3rem;
-  border: none;
-  color: white;
-  background-color: rgb(73, 73, 170);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.sign-in-button:hover {
-  color: rgb(73, 73, 170);
-  background-color: white;
-  box-shadow: 1px 1px 10px 1px rgb(73, 73, 170);
-}
-
-.forget-link {
-  font-size: 1.2rem;
-  color: #9e9d9de3;
-  height: 70%;
-  text-decoration: underline;
-  transition: all 0.3s ease;
-}
-
-.forget-link:hover{
-  color: rgb(73, 73, 170);
-}

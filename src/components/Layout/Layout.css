@@ -1,0 +1,9 @@
+.Layout {
+ height: 100vh;
+}
+
+.nav-bar {
+  width: 100%;
+  height: 10%;
+  background-color: #ca9696;
+}

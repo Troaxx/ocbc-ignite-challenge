@@ -1,0 +1,38 @@
+.HomePage {
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  height: 100%;
+}
+
+.greet-container {
+  width: 100%;
+  height: 30%;
+}
+.greet-container h1 {
+  font-size: 5rem;
+  color: #005279;
+}
+.greet-container h2 {
+  font-size: 3rem;
+}
+.greet-container h3 {
+  font-size: 2rem;
+}
+
+.operations-container {
+  width: 90%;
+  height: 70%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.operations-box-container {
+  width: 60%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 2rem;
+}
+

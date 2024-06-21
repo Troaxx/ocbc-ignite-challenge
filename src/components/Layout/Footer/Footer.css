@@ -1,0 +1,67 @@
+.Footer {
+  height: 10%;
+  width: 100%;
+  background-color: white;
+  display: flex;
+}
+
+.footer-logo {
+  height: 100%;
+  width: 30%;
+  text-align: center;
+}
+
+.footer-logo img {
+  width: 50%;
+  height: 100%;
+}
+
+.copyrights {
+  display: flex;
+  gap: 1rem;
+  width: 30%;
+  font-size: 1.2rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer-social-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 30%;
+  gap: 1rem;
+  font-size: 2.5rem;
+}
+
+.icon-link {
+  color: black;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.github-link:hover {
+  color: #6e00fd;
+}
+
+.linked-in-link:hover {
+  color: #007bff;
+}
+
+.email-link:hover {
+  color: #ff0000;
+}
+
+.footer-social-links a {
+  text-decoration: none;
+}
+.custom-toast-position {
+  position: fixed;
+  bottom: 3rem;
+  right: 3rem;
+  z-index: 10;
+   width: 20rem;
+}

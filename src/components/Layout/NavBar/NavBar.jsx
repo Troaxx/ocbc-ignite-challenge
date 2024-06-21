@@ -27,7 +27,7 @@ const NavBar = () => {
       </div>
       <ul className="nav-links">
         <li><NavLink className='nav-link' to={'/'}><ICONS.Home className="home-icon"/></NavLink></li>
-        <li><NavLink className='nav-link' to={'/userManage'}> UserManage </NavLink></li>
+        <li><NavLink className='nav-link' to={'/client'}> Client Manage </NavLink></li>
         <li><NavLink className='nav-link' to={'/transactions'}> Transactions </NavLink></li>
       </ul>
       <div className="logout-button-container">

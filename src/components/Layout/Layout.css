@@ -1,9 +1,8 @@
 .Layout {
  height: 100vh;
+ display: flex;
+ flex-direction: column;
+ align-items: flex-start;
+ justify-content: space-between;
 }
 
-.nav-bar {
-  width: 100%;
-  height: 10%;
-  background-color: #ca9696;
-}

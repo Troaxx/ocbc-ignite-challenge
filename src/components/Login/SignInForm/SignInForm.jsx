@@ -61,7 +61,7 @@ const SignInForm = () => {
           className="password-input"
         />
         <div className="button-container">
-          <button className="sign-in-button" type="submit">
+          <button className="sign-in-button button" type="submit">
             SIGN IN
           </button>
           <Link className="forget-link" to="/forgot-password">Forgot your password?</Link>

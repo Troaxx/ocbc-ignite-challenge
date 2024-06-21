@@ -19,8 +19,6 @@ const SignInForm = () => {
   const [emailError, setEmailError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-
-
   const handleSignIn = async (event) => {
     event.preventDefault();
     setIsLoading(true);
@@ -28,12 +26,12 @@ const SignInForm = () => {
     
     const isEmailValid = validateEmail(email);
     if (!isEmailValid) {
+      setIsLoading(false);
       setEmailError('Please enter a valid email address.');
       return;
     }
     try {
       const admin = await login(email, password);
-      console.log(admin);
       if(admin) {
         navigate('/'); 
       }

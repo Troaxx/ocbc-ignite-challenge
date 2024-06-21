@@ -2,7 +2,7 @@ import LoginPage from "./LoginPage/LoginPage";
 import HomePage from "./HomePage/HomePage";
 import NotFoundPage from "./NotFoundPage/NotFoundPage";
 import TransactionsPage from "./TransactionsPage/TransactionsPage";
-import ClientPage from "./ClientPage/ClientPage";
+import ClientManagePage from './ClientManagePage/ClientManagePage'
 
 
-export {HomePage, LoginPage, NotFoundPage, ClientPage, TransactionsPage } ;
+export {HomePage, LoginPage, NotFoundPage, ClientManagePage, TransactionsPage } ;

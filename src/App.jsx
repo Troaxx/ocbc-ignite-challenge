@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AuthProvider } from './context/AuthContext.jsx'
 
-import { ClientPage, HomePage, LoginPage, NotFoundPage, TransactionsPage } from "./pages";
+import { ClientManagePage, HomePage, LoginPage, NotFoundPage, TransactionsPage } from "./pages";
 import { Layout, ProtectedRoute } from "./components";
 
 function App() {
@@ -20,7 +20,7 @@ function App() {
         },
         {
           path: 'clientManage',
-          element: <ClientPage />,
+          element: <ClientManagePage />,
         },
         {
           path: 'transactions',

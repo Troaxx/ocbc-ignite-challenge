@@ -8,6 +8,7 @@ import { PiHandDepositBold } from "react-icons/pi";
 import { GiTakeMyMoney } from "react-icons/gi";
 import { IoLogoLinkedin } from "react-icons/io5";
 import { SiGmail } from "react-icons/si";
+import { FaSearch } from "react-icons/fa";
 
 
 const ICONS = {
@@ -22,6 +23,8 @@ const ICONS = {
   Gmail: SiGmail,
   LinkedIn: IoLogoLinkedin,
   GitHub: FaGithub,
+  Search: FaSearch,
+  
 };
 
 export default ICONS;

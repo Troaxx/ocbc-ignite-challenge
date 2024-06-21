@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AuthProvider } from './context/AuthContext.jsx'
 
-import { HomePage, LoginPage, NotFoundPage } from "./pages";
+import { ClientPage, HomePage, LoginPage, NotFoundPage, TransactionsPage } from "./pages";
 import { Layout, ProtectedRoute } from "./components";
 
 function App() {
@@ -18,7 +18,14 @@ function App() {
           index: true,
           element: <HomePage />,
         },
-
+        {
+          path: 'clientManage',
+          element: <ClientPage />,
+        },
+        {
+          path: 'transactions',
+          element: <TransactionsPage />,
+        },
       ]
     },
     {

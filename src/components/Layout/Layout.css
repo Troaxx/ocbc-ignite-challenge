@@ -1,13 +1,14 @@
 .Layout {
- height: 100vh;
+ height: 120vh;
  display: flex;
  flex-direction: column;
  align-items: flex-start;
  justify-content: space-between;
- background-image: url(/public/assets/images/—Pngtree—abstract\ light\ blue\ background\ stock_2010170.jpg);
+ background-image: url(/public/assets/images/bgc-image.jpg);
  background-repeat: no-repeat;
  background-position: center;
  background-size: cover;
+ overflow: hidden;
 }
 
 main {

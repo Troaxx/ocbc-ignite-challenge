@@ -13,8 +13,8 @@ const OperationBox = ({ label, IconComponent, navigateTo }) => {
 
   return (
     <div className="operation-box" onClick={handleClick}>
-      <p>{label}</p>
       <IconComponent className="operation-box-icon" />
+      <p>{label}</p>
     </div>
   );
 };

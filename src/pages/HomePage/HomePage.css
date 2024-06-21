@@ -11,13 +11,15 @@
 }
 .greet-container h1 {
   font-size: 5rem;
-  color: #005279;
+  color: #000000;
 }
 .greet-container h2 {
   font-size: 3rem;
+  color: rgb(56, 56, 56);
 }
 .greet-container h3 {
   font-size: 2rem;
+  color: rgb(78, 78, 78);
 }
 
 .operations-container {
@@ -36,3 +38,37 @@
   gap: 2rem;
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.HomePage .greet-container, .HomePage .operations-box-container {
+  opacity: 0; 
+  animation: fadeIn 1.5s ease-in-out forwards; 
+}
+
+
+.HomePage .operations-box-container {
+  animation-delay: 0.5s; 
+}
+
+
+.operation-box {
+  transition: transform 0.3s, opacity 0.3s;
+  opacity: 0; 
+  animation: fadeIn 2s ease-in-out forwards; 
+}
+
+.operation-box:nth-child(1) { animation-delay: 0.6s; }
+.operation-box:nth-child(2) { animation-delay: 0.8s; }
+.operation-box:nth-child(3) { animation-delay: 1s; }
+.operation-box:nth-child(4) { animation-delay: 1.2s; }
+.operation-box:nth-child(5) { animation-delay: 1.4s; }
+.operation-box:nth-child(6) { animation-delay: 1.6s; }

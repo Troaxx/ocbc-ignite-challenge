@@ -23,7 +23,7 @@ const NavBar = () => {
 
     <nav className="nav-bar">
       <div className="logo-container">
-        <img className="logo" src="/public/assets/svg/logo-no-background.svg" alt="" onClick={handleLogoClick} />
+        <img className="logo" src="/assets/svg/logo-no-background.svg" alt="" onClick={handleLogoClick} />
       </div>
       <ul className="nav-links">
         <li><NavLink className='nav-link' to={'/'}><ICONS.Home className="home-icon"/></NavLink></li>

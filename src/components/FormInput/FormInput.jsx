@@ -1,14 +1,14 @@
 import React from "react";
-
 import './FormInput.css';
 
-const FormInput = ({ label, type, value, onChange, className }) => {
+const FormInput = ({ label, type, value, onChange, name, className }) => {
   return (
     <div className={`input-group ${className}`}>
-      <label htmlFor={label}>{label}</label>
+      <label htmlFor={name}>{label}</label>
       <input
         type={type}
-        id={label}
+        id={name}
+        name={name}
         value={value}
         onChange={onChange}
       />

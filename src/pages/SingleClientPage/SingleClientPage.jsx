@@ -61,7 +61,7 @@ const SingleClientPage = () => {
       <span className={`pro ${editData.isActive ? 'active' : 'inactive'}`}>
         {editData.isActive ? 'Active' : 'Not Active'}
       </span>
-      <img className="round-image" src={editData.image} alt={editData.name} />
+      <img className="round-image" src={editData.image ? editData.image : '../../../assets/images/nophoto.png'} alt='Client-Profile' />
       <SingleClientDetails
         client={editData}
         editData={editData}

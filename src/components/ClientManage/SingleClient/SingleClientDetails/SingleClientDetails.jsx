@@ -12,6 +12,8 @@ const SingleClientDetails = ({ client, editData, editMode, handleChange }) => {
           <h3>Age: <input name="age" type="number" value={editData.age} onChange={handleChange} /></h3>
           <h3>Address: <input name="city" type="text" value={editData.city} onChange={handleChange} /></h3>
           <h3>Phone Number: <input name="phone" type="text" value={editData.phone} onChange={handleChange} /></h3>
+          <h3>Cash: <span>{client.cash}</span></h3>
+          <h3>Credit: <span>{client.credit}</span></h3>
         </>
       ) : (
         <>
@@ -20,6 +22,8 @@ const SingleClientDetails = ({ client, editData, editMode, handleChange }) => {
           <h3>Age: <span>{client.age}</span></h3>
           <h3>Address: <span>{client.city}</span></h3>
           <h3>Phone Number: <span>{client.phone}</span></h3>
+          <h3>Cash: <span>{client.cash}</span></h3>
+          <h3>Credit: <span>{client.credit}</span></h3>
         </>
       )}
     </div>

@@ -6,6 +6,7 @@ import { ClientSearch, ErrorComponent, Loader } from "../../components";
 import { useFetchClients } from "../../context/FetchClientsContext";
 
 import './ClientManagePage.css';
+import ICONS from "../../models/icons";
 
 const ClientManagePage = () => {
 
@@ -21,13 +22,20 @@ const ClientManagePage = () => {
     navigate(`/singlePage/${clientId}`)
   }
 
+  const onAddClick = ()=>{
+    navigate('/addClient');
+  }
+
   const filteredClients = clients.filter(client =>
     client.id.toString().toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="ClientManagePage">
+    <div className="search-container">
       <ClientSearch handleSearchChange={handleSearchChange} />
+        <button className="add-icon-button" onClick={onAddClick}><ICONS.AddClient className="add-icon"/></button>
+    </div>
       <section className={`clients-list-container ${loading ? 'align' : ''}`}>
         {loading && <Loader />}
         {error && <ErrorComponent />}

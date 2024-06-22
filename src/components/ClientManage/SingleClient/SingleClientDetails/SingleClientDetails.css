@@ -5,7 +5,7 @@
   height: 100%;
   min-width: 20%;
   font-size: 1.6rem;
-  line-height: 6rem;
+  gap: 1.5rem;
 }
 
 .client-details-container h3 span {

@@ -17,7 +17,7 @@ const HomePage = () => {
       <div className="operations-container">
         <div className="operations-box-container">
           <OperationBox label="Manage Client" IconComponent={ICONS.Manage} navigateTo="/clientManage" />
-          <OperationBox label="Add New Client" IconComponent={ICONS.AddClient} navigateTo="/clientManage" />
+          <OperationBox label="Add New Client" IconComponent={ICONS.AddClient} navigateTo="/addClient" />
           <OperationBox label="Remove Client" IconComponent={ICONS.RemoveClient} navigateTo="/clientManage" />
           <OperationBox label="Make Transfer" IconComponent={ICONS.Transfer} navigateTo="/transactions" />
           <OperationBox label="Make Deposit" IconComponent={ICONS.Deposit} navigateTo="/transactions" />

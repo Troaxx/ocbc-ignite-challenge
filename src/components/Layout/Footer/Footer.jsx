@@ -36,10 +36,10 @@ const Footer = () => {
         <a href="/terms-of-service">Terms of Service</a> | <a href="/privacy-policy">Privacy Policy</a>
       </div>
       <div className="footer-social-links">
-        <a href='' target="_blank" rel="noopener noreferrer" >
+        <a href='' target="_blank" rel="https://dyz-bank-manager-react.netlify.app/" >
           <ICONS.GitHub className="icon-link github-link" />
         </a>
-        <a href='' target="_blank" rel="noopener noreferrer" >
+        <a href='' target="_blank" rel="https://github.com/DanielYehezkely/bank-management-react" >
           <ICONS.LinkedIn className="icon-link linked-in-link" />
         </a>
         <span onClick={handleCopy}>

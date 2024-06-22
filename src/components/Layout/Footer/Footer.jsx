@@ -11,7 +11,7 @@ const Footer = () => {
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText('my email');
+      await navigator.clipboard.writeText('kegezgaming@gmail.com');
       toast.success('Email copied to clipboard!', {
         className: 'custom-toast-position',
         autoClose: 2000,

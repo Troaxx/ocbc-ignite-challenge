@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AuthProvider } from './context/AuthContext.jsx'
 
-import { ClientManagePage, HomePage, LoginPage, NotFoundPage, TransactionsPage } from "./pages";
+import { ClientManagePage, HomePage, LoginPage, NotFoundPage, SingleClientPage, TransactionsPage } from "./pages";
 import { Layout, ProtectedRoute } from "./components";
 import { FetchClientsProvider } from "./context/FetchClientsContext.jsx";
 
@@ -22,6 +22,10 @@ function App() {
         {
           path: 'clientManage',
           element: <ClientManagePage />,
+        },
+        {
+          path: 'singlePage/:clientId',
+          element: <SingleClientPage />
         },
         {
           path: 'transactions',

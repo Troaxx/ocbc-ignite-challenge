@@ -1,0 +1,14 @@
+.client-details-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  min-width: 20%;
+  font-size: 1.6rem;
+  line-height: 6rem;
+}
+
+.client-details-container h3 span {
+  font-size: 1.4rem;
+  font-weight: 400;
+}

@@ -3,6 +3,6 @@ import HomePage from "./HomePage/HomePage";
 import NotFoundPage from "./NotFoundPage/NotFoundPage";
 import TransactionsPage from "./TransactionsPage/TransactionsPage";
 import ClientManagePage from './ClientManagePage/ClientManagePage'
+import SingleClientPage from "./SingleClientPage/SingleClientPage";
 
-
-export {HomePage, LoginPage, NotFoundPage, ClientManagePage, TransactionsPage } ;
+export {HomePage, LoginPage, NotFoundPage, ClientManagePage, TransactionsPage, SingleClientPage } ;

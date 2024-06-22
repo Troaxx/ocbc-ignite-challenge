@@ -1,5 +1,5 @@
 import { db } from '../config/firebaseConfig'; 
-import { collection, getDocs, addDoc, deleteDoc, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, deleteDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 
 const CLIENTS_COLLECTION = 'clients';
 
@@ -41,5 +41,17 @@ export const deleteClient = async (clientId) => {
     await deleteDoc(doc(db, CLIENTS_COLLECTION, clientId));
   } catch (error) {
     throw new Error('Error deleting client');
+  }
+};
+
+export const updateClient = async (clientId, updatedData) => {
+  try {
+    const docRef = doc(db, CLIENTS_COLLECTION, clientId);
+    console.log('Updating client with ID:', clientId, 'with data:', updatedData); 
+    await updateDoc(docRef, updatedData);
+    return { id: clientId, ...updatedData };
+  } catch (error) {
+    console.error('Error updating client:', error); 
+    throw new Error('Error updating client');
   }
 };

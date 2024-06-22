@@ -1,0 +1,27 @@
+
+
+.client-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: none;
+  cursor: pointer;
+  background-color: transparent;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  border-radius: 50%;
+  background-color: #ffffff54;
+}
+
+.client-button:hover {
+  transform: scale(1.1);
+  background-color: #fffffff8;
+}
+
+.remove-color {
+  color: rgba(255, 0, 0, 0.712);
+}
+
+.client-button span {
+  font-size: 6rem;
+}

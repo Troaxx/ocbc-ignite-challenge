@@ -17,8 +17,8 @@ const ClientManagePage = () => {
     setSearchTerm(term);
   };
 
-  const onManageClick = () => {
-    navigate('/')
+  const onManageClick = (clientId) => {
+    navigate(`/singlePage/${clientId}`)
   }
 
   const filteredClients = clients.filter(client =>

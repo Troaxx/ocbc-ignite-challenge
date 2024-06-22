@@ -1,46 +1,42 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router";
 
-import { getClients } from "../../services/firebaseApi";
 import ClientCard from "../../components/ClientManage/ClientCard/ClientCard";
-import { ClientSearch } from "../../components";
+import { ClientSearch, ErrorComponent, Loader } from "../../components";
+import { useFetchClients } from "../../context/FetchClientsContext";
 
-import './ClientManagePage.css'; 
+import './ClientManagePage.css';
 
 const ClientManagePage = () => {
-  const [clients, setClients] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  const fetchClients = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const clientsData = await getClients();
-      setClients(clientsData);
-    } catch (error) {
-      setError('Failed to fetch clients.');
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
+  const { loading, clients, error } = useFetchClients();
+  const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
+
+  const handleSearchChange = (term) => {
+    setSearchTerm(term);
   };
 
-  useEffect(() => {
-    fetchClients();
-  }, []);
+  const onManageClick = () => {
+    navigate('/')
+  }
+
+  const filteredClients = clients.filter(client =>
+    client.id.toString().toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="ClientManagePage">
-      <ClientSearch/>
-      <section className="clients-list-container">
-        {loading && <p>Loading...</p>}
-        {error && <p>{error}</p>}
-        {clients.length > 0 ? (
-          clients.map(client => (
-            <ClientCard key={client.id} client={client} />
+      <ClientSearch handleSearchChange={handleSearchChange} />
+      <section className={`clients-list-container ${loading ? 'align' : ''}`}>
+        {loading && <Loader />}
+        {error && <ErrorComponent />}
+        {filteredClients.length > 0 ? (
+          filteredClients.map(client => (
+            <ClientCard key={client.id} client={client} onManage={onManageClick}  />
           ))
         ) : (
-          !loading && <p>No clients found.</p>
+          !loading && <p className="no-clients-message">No clients found.</p>
         )}
       </section>
     </div>

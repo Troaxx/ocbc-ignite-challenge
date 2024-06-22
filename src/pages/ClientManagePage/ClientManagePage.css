@@ -16,5 +16,14 @@
   gap: 1rem;
 }
 
+.align {
+  align-items: center;
+}
+
+.no-clients-message {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
 
 

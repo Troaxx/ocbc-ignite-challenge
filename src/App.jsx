@@ -3,6 +3,7 @@ import { AuthProvider } from './context/AuthContext.jsx'
 
 import { ClientManagePage, HomePage, LoginPage, NotFoundPage, TransactionsPage } from "./pages";
 import { Layout, ProtectedRoute } from "./components";
+import { FetchClientsProvider } from "./context/FetchClientsContext.jsx";
 
 function App() {
   const router = createBrowserRouter([
@@ -36,7 +37,9 @@ function App() {
 
   return (
     <AuthProvider>
+    <FetchClientsProvider>
       <RouterProvider router={router} />
+    </FetchClientsProvider>
     </AuthProvider>
   );
 };

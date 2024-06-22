@@ -1,5 +1,5 @@
 import { FaHome, FaGithub } from "react-icons/fa";
-import { IoMdLogOut } from "react-icons/io";
+import { IoMdLogOut, IoMdSettings } from "react-icons/io";
 import { MdManageAccounts } from "react-icons/md";
 import { AiOutlineUsergroupAdd } from "react-icons/ai";
 import { FcMoneyTransfer } from "react-icons/fc";
@@ -24,6 +24,7 @@ const ICONS = {
   LinkedIn: IoLogoLinkedin,
   GitHub: FaGithub,
   Search: FaSearch,
+  Settings: IoMdSettings,
   
 };
 

@@ -4,7 +4,7 @@ import ICONS from "../../../models/icons";
 
 import './ClientSearch.css';
 
-const ClientSearch = ({ handleSearchChange }) => {
+const ClientSearch = ({ handleSearchChange, placeholder }) => {
 
   return (
     <>
@@ -12,7 +12,7 @@ const ClientSearch = ({ handleSearchChange }) => {
         <input
           type="text"
           id="search"
-          placeholder="Search client by ID..."
+          placeholder={placeholder}
           onChange={(e) => handleSearchChange(e.target.value)}
         />
         <button type="submit" id="submit">

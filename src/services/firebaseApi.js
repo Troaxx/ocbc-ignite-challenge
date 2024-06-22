@@ -1,22 +1,9 @@
-import { db, storage } from '../config/firebaseConfig';
+import { db } from '../config/firebaseConfig';
 import { collection, getDocs, deleteDoc, doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'; 
+
 
 const CLIENTS_COLLECTION = 'clients';
 
-export const uploadImage = async (file) => {
-  if (!file) throw new Error("No file provided");
-
-  try {
-    const storageRef = ref(storage, `clients/${file.name}`);
-    const snapshot = await uploadBytes(storageRef, file);
-    const url = await getDownloadURL(snapshot.ref);
-    return url;
-  } catch (error) {
-    console.error("Error uploading image:", error);
-    throw new Error("Failed to upload image: " + error.message);
-  }
-};
 
 export const getClients = async () => {
   try {
@@ -67,11 +54,9 @@ export const deleteClient = async (clientId) => {
 export const updateClient = async (clientId, updatedData) => {
   try {
     const docRef = doc(db, CLIENTS_COLLECTION, clientId);
-    console.log('Updating client with ID:', clientId, 'with data:', updatedData);
     await updateDoc(docRef, updatedData);
     return { id: clientId, ...updatedData };
   } catch (error) {
-    console.error('Error updating client:', error);
     throw new Error('Error updating client');
   }
 };

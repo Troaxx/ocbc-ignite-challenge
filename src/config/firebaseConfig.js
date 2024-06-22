@@ -20,11 +20,6 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
 
-console.log("Firebase initialized:", app);
-console.log("Firestore instance:", db);
-console.log("Auth instance:", auth);
-console.log("Storage instance:", storage);
-
 
 export { db, auth, storage };
 

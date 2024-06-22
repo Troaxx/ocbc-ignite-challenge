@@ -1,6 +1,6 @@
 import { FaHome, FaGithub } from "react-icons/fa";
 import { IoMdLogOut, IoMdSettings } from "react-icons/io";
-import { MdManageAccounts, MdNoPhotography } from "react-icons/md";
+import { MdManageAccounts, MdNoPhotography, MdCurrencyExchange } from "react-icons/md";
 import { AiOutlineUsergroupAdd } from "react-icons/ai";
 import { FcMoneyTransfer, FcApproval, FcCancel } from "react-icons/fc";
 import { HiUserRemove } from "react-icons/hi";
@@ -31,6 +31,7 @@ const ICONS = {
   Save: FcApproval,
   Cancel: FcCancel,
   Photo: MdNoPhotography,
+  Change: MdCurrencyExchange,
   
 };
 

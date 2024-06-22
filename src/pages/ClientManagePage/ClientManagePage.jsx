@@ -33,7 +33,7 @@ const ClientManagePage = () => {
   return (
     <div className="ClientManagePage">
     <div className="search-container">
-      <ClientSearch handleSearchChange={handleSearchChange} />
+      <ClientSearch handleSearchChange={handleSearchChange} placeholder={"Search client by ID..."}/>
         <button className="add-icon-button" onClick={onAddClick}><ICONS.AddClient className="add-icon"/></button>
     </div>
       <section className={`clients-list-container ${loading ? 'align' : ''}`}>

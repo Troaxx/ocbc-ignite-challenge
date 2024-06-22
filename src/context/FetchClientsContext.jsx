@@ -28,7 +28,6 @@ export const FetchClientsProvider = ({ children }) => {
     fetchClients();
   }, []);
 
- 
 
   return (
     <FetchClientsContext.Provider value={{clients, error, loading, fetchClients }}>

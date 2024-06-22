@@ -1,0 +1,9 @@
+.search-container label {
+  font-size: 1.6rem;
+}
+.search-container input[type=checkbox] {
+  cursor: pointer;
+}
+.no-clients-message {
+  align-self: center;
+}

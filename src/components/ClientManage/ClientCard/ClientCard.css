@@ -2,19 +2,47 @@
   border: 1px solid #ccc;
   border-radius: 1rem;
   padding: 20px;
-  width: 80%;
+  min-width: 60%;
   display: flex;
   align-items: center;
+  justify-content: space-around;
   gap: 1rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.788);
   background-color: #ffffff59;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.client-card:hover {
+  transform: scale(1.05);
+}
+
+.inactive {
+  background-color: #ff6d6dd0;
 }
 
 .client-card h3 {
   font-size: 1.6em;
 }
 
-.client-card p {
+.client-detail {
   font-size: 1.2rem;
+}
+
+.client-active {
+  font-size: 1.6rem;
+  color: green;
+}
+
+.client-not-active {
+  font-size: 1.6rem;
+  color: rgb(255, 0, 0);
+}
+
+.manage-button {
+  background-color: rgb(8, 192, 131);
+  box-shadow: 0 0 2px 1px rgb(0, 0, 0);
+}
+.manage-button:hover {
+  background-color: #fff;
 }

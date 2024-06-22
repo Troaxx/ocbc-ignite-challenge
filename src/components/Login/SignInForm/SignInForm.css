@@ -7,42 +7,7 @@
   font-size: 1.4rem;
 }
 
-.input-group {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-.input-group label {
-  color: #9e9d9de3;
-}
-
-.input-group input[type="email"],
-.input-group input[type="password"] {
-  border: none;
-  border-bottom: 1px solid #9e9d9d;
-  padding: 0.5rem;
-  color: rgb(0, 0, 160);
-}
-.input-group input[type="email"]:focus,
-.input-group input[type="password"]:focus {
-  box-shadow: none;
-  background-color: transparent;
-  outline: none;
-  border-bottom: 1px solid #000000;
-}
-
-.input-group input[type="checkbox"] {
-  cursor: pointer;
-}
-
-.checkbox {
-  flex-direction: row;
-  gap: 0.5rem;
-  font-size: 1.2rem;
-}
-
-.button-container {
+.login-button-container {
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -52,18 +17,22 @@
 }
 
 .button {
-  padding: 1rem 3rem;
+  padding: 1rem 2rem;
   border-radius: 3rem;
   font-size: 1.4rem;
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
   white-space: nowrap;
+}
+
+.sign-in-button{
+  padding: 1rem 3rem;
   color: white;
   background-color: rgb(73, 73, 170);
 }
 
-.button:hover {
+.sign-in-button:hover {
   color: rgb(73, 73, 170);
   background-color: white;
   box-shadow: 1px 1px 6px 1px rgb(73, 73, 170);

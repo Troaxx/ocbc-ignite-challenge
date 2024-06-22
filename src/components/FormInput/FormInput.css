@@ -1,0 +1,34 @@
+.input-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.input-group label {
+  color: #9e9d9de3;
+}
+
+.input-group input[type="email"],
+.input-group input[type="password"] {
+  border: none;
+  border-bottom: 1px solid #9e9d9d;
+  padding: 0.5rem;
+  color: rgb(0, 0, 160);
+}
+.input-group input[type="email"]:focus,
+.input-group input[type="password"]:focus {
+  box-shadow: none;
+  background-color: transparent;
+  outline: none;
+  border-bottom: 1px solid #000000;
+}
+
+.input-group input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.checkbox {
+  flex-direction: row;
+  gap: 0.5rem;
+  font-size: 1.2rem;
+}

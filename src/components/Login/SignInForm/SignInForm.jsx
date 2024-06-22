@@ -60,7 +60,7 @@ const SignInForm = () => {
           onChange={(e) => setPassword(e.target.value)}
           className="password-input"
         />
-        <div className="button-container">
+        <div className="login-button-container">
           <button className="sign-in-button button" type="submit">
             SIGN IN
           </button>

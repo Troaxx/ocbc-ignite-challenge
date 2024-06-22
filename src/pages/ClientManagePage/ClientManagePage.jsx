@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-import ICONS from "../../models/icons";
+
 import { getClients } from "../../services/firebaseApi";
 import ClientCard from "../../components/ClientManage/ClientCard/ClientCard";
-import './ClientManagePage.css';
+import { ClientSearch } from "../../components";
+
+import './ClientManagePage.css'; 
 
 const ClientManagePage = () => {
   const [clients, setClients] = useState([]);
@@ -29,12 +31,7 @@ const ClientManagePage = () => {
 
   return (
     <div className="ClientManagePage">
-      <section className="search-container">
-        <label htmlFor="search">Search Client: </label>
-        <input type="search" />
-        <button><ICONS.Search /></button>
-      </section>
-
+      <ClientSearch/>
       <section className="clients-list-container">
         {loading && <p>Loading...</p>}
         {error && <p>{error}</p>}

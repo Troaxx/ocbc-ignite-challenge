@@ -165,4 +165,8 @@
   .icon-link {
     font-size: 2rem;
   }
+  .Layout  {
+    min-height: 120vh;
+    gap: 5rem;
+  }
 }

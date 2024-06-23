@@ -1,16 +1,14 @@
 import { db } from '../config/firebaseConfig';
 import { collection, getDocs, deleteDoc, doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
 
-
-const CLIENTS_COLLECTION = 'clients';
-
+import {ADD_CLIENT_ERROR_MSG , DELETE_CLIENT_ERROR_MSG, GET_CLIENTS_ERROR_MSG, UPDATE_CLIENT_ERROR_MSG, ADD_EXISTING_CLIENT_ID_MSG , CLIENTS_COLLECTION} from '../models/constants'
 
 export const getClients = async () => {
   try {
     const querySnapshot = await getDocs(collection(db, CLIENTS_COLLECTION));
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   } catch (error) {
-    throw new Error('Error fetching clients');
+    throw new Error(GET_CLIENTS_ERROR_MSG);
   }
 };
 
@@ -34,12 +32,12 @@ export const addClient = async (clientId, clientData) => {
     const docRef = doc(db, CLIENTS_COLLECTION, clientId);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-      throw new Error('Client ID already exists. Please choose a different ID.');
+      throw new Error(ADD_EXISTING_CLIENT_ID_MSG);
     }
     await setDoc(docRef, clientData);
     return { id: clientId, ...clientData };
   } catch (error) {
-    throw new Error('Error adding client: ' + error.message);
+    throw new Error(ADD_CLIENT_ERROR_MSG + error.message);
   }
 };
 
@@ -47,7 +45,7 @@ export const deleteClient = async (clientId) => {
   try {
     await deleteDoc(doc(db, CLIENTS_COLLECTION, clientId));
   } catch (error) {
-    throw new Error('Error deleting client');
+    throw new Error(DELETE_CLIENT_ERROR_MSG);
   }
 };
 
@@ -57,6 +55,6 @@ export const updateClient = async (clientId, updatedData) => {
     await updateDoc(docRef, updatedData);
     return { id: clientId, ...updatedData };
   } catch (error) {
-    throw new Error('Error updating client');
+    throw new Error(UPDATE_CLIENT_ERROR_MSG);
   }
 };

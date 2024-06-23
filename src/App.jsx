@@ -1,9 +1,10 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
 import { AuthProvider } from './context/AuthContext.jsx'
+import { FetchClientsProvider } from "./context/FetchClientsContext.jsx";
 
 import { AddClientPage, ClientManagePage, HomePage, LoginPage, NotFoundPage, SingleClientPage, TransactionsPage } from "./pages";
 import { Layout, ProtectedRoute } from "./components";
-import { FetchClientsProvider } from "./context/FetchClientsContext.jsx";
 
 function App() {
   const router = createBrowserRouter([
@@ -46,9 +47,9 @@ function App() {
 
   return (
     <AuthProvider>
-    <FetchClientsProvider>
-      <RouterProvider router={router} />
-    </FetchClientsProvider>
+      <FetchClientsProvider>
+        <RouterProvider router={router} />
+      </FetchClientsProvider>
     </AuthProvider>
   );
 };

@@ -12,6 +12,7 @@ import AddClientForm from './AddClientForm/AddClientForm';
 import ClientActionCard from './Transactions/ClientActionCard/ClientActionCard';
 import SearchByFilter from './Transactions/SearchByFilter/SearchByFilter';
 import ClientActionModal from './Transactions/ClientActionModal/ClientActionModal';
+import ClientsList from './Transactions/ClientsList/ClientsList';
 
 
-export {ErrorComponent, Layout, Loader, SignInForm, FormInput, ProtectedRoute, OperationBox, ClientSearch, SingleClientBtn, SingleClientDetails, AddClientForm , ClientActionCard, SearchByFilter, ClientActionModal}; 
+export {ErrorComponent, Layout, Loader, SignInForm, FormInput, ProtectedRoute, OperationBox, ClientSearch, SingleClientBtn, SingleClientDetails, AddClientForm , ClientActionCard, SearchByFilter, ClientActionModal, ClientsList}; 

@@ -34,9 +34,9 @@ const ClientManagePage = () => {
     <div className="ClientManagePage">
     <div className="search-container">
       <ClientSearch handleSearchChange={handleSearchChange} placeholder={"Search client by ID..."}/>
-        <button className="add-icon-button" onClick={onAddClick}><ICONS.AddClient className="add-icon"/></button>
+        <button className="add-icon-button" onClick={onAddClick}><ICONS.AddClient/></button>
     </div>
-      <section className={`clients-list-container ${loading ? 'align' : ''}`}>
+      <section className={`clients-list-container ${loading ? 'align-loader' : ''}`}>
         {loading && <Loader />}
         {error && <ErrorComponent />}
         {filteredClients.length > 0 ? (

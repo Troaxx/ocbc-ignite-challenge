@@ -1,22 +1,24 @@
 import React, { useState } from "react";
-import './ClientActionModal.css';
+
 import Loader from "../../Loader/Loader";
 import ErrorComponent from "../../ErrorComponent/ErrorComponent";
+import { useFetchClients } from "../../../context/FetchClientsContext";
+
+import './ClientActionModal.css';
 
 const ClientActionModal = ({
   client,
   onClose,
   onSubmit,
-  loading,
   actionType,
-  currentLabel = "Current Value",
-  inputLabel = "New Value",
-  buttonLabel = "Submit",
-  clients = [], 
+  currentLabel,
+  inputLabel,
+  buttonLabel, 
 }) => {
-  const [newValue, setNewValue] = useState(actionType === "draw" || actionType === "deposit" ? 0 : client.credit);
+  const [newValue, setNewValue] = useState(actionType === "credit" ? client.credit : 0);
   const [targetClientId, setTargetClientId] = useState(""); 
   const [localError, setLocalError] = useState(null);
+  const {loading , clients} = useFetchClients();
 
   const handleChange = (e) => {
     setNewValue(e.target.value);

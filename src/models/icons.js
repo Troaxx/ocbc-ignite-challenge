@@ -1,4 +1,4 @@
-import { FaHome, FaGithub } from "react-icons/fa";
+import { FaHome, FaGithub, FaSearch, FaBars, FaTimes } from "react-icons/fa";
 import { IoMdLogOut, IoMdSettings } from "react-icons/io";
 import { MdManageAccounts, MdNoPhotography, MdCurrencyExchange } from "react-icons/md";
 import { AiOutlineUsergroupAdd } from "react-icons/ai";
@@ -8,7 +8,6 @@ import { PiHandDepositBold } from "react-icons/pi";
 import { GiTakeMyMoney } from "react-icons/gi";
 import { IoLogoLinkedin } from "react-icons/io5";
 import { SiGmail } from "react-icons/si";
-import { FaSearch } from "react-icons/fa";
 import { CiEdit } from "react-icons/ci";
 
 
@@ -32,7 +31,8 @@ const ICONS = {
   Cancel: FcCancel,
   Photo: MdNoPhotography,
   Change: MdCurrencyExchange,
-  
+  Bars: FaBars,
+  CloseX: FaTimes,
 };
 
 export default ICONS;

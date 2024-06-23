@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 
 import ICONS from "../../../models/icons";
@@ -8,6 +8,7 @@ import './NavBar.css'
 
 const NavBar = () => {
   
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate()
   const {logout} = useAuth();
   
@@ -19,22 +20,28 @@ const NavBar = () => {
     navigate('/');
   }
 
-  return (
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen); 
+  }
 
+  return (
     <nav className="nav-bar">
       <div className="logo-container">
         <img className="logo" src="/assets/images/dy-bank-high-resolution-logo-black-transparent.png" alt="" onClick={handleLogoClick} />
       </div>
-      <ul className="nav-links">
-        <li><NavLink className='nav-link' to={'/'}><ICONS.Home className="home-icon"/></NavLink></li>
+      <div className="hamburger" onClick={toggleMenu}>
+        {isMenuOpen ? <ICONS.CloseX /> : <ICONS.Bars />}
+      </div>
+      <ul className={`nav-links ${isMenuOpen ? 'open' : ''}`}>
+        <li><NavLink className='nav-link' to={'/'}><ICONS.Home className="home-icon" /></NavLink></li>
         <li><NavLink className='nav-link' to={'/clientManage'}> Client Manage </NavLink></li>
         <li><NavLink className='nav-link' to={'/transactions'}> Transactions </NavLink></li>
+        {isMenuOpen && <button className="logout-button button" onClick={handleLogOutClick}> LOGOUT <ICONS.Logout className="logout-icon" /></button>}
       </ul>
       <div className="logout-button-container">
-        <button className="logout-button button " onClick={handleLogOutClick}> LOGOUT <ICONS.Logout className="logout-icon"/></button>
+        <button className="logout-button button" onClick={handleLogOutClick}> LOGOUT <ICONS.Logout className="logout-icon" /></button>
       </div>
     </nav>
-
   );
 };
 

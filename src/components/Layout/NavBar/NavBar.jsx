@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 
 import ICONS from "../../../models/icons";
@@ -11,6 +11,22 @@ const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate()
   const {logout} = useAuth();
+
+  const handleScroll = () => {
+    const navBar = document.querySelector('.nav-bar');
+    if (window.scrollY > 0) {
+      navBar.classList.add('sticky');
+    } else {
+      navBar.classList.remove('sticky');
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
   
   const handleLogOutClick = async () => {
     logout();

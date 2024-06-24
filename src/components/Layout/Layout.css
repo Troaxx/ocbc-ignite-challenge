@@ -1,5 +1,5 @@
 .Layout {
- height: 120vh;
+ min-height: 120vh;
  display: flex;
  flex-direction: column;
  align-items: flex-start;
@@ -8,7 +8,6 @@
  background-repeat: no-repeat;
  background-position: center;
  background-size: cover;
- overflow: hidden;
 }
 
 main {
@@ -18,5 +17,6 @@ main {
   align-items: center;
   justify-content: flex-start;
   flex-direction: column;
+  
 }
 

@@ -180,12 +180,37 @@
   .ClientSearch {
     width: 80%;
   }
+  .ClientSearch #submit{
+    padding: 0.8rem;
+  }
   .client-card{
     flex-direction: column;
   }
   .ClientManagePage{
     gap: 2rem;
     padding: 3rem 0;
+  }
+  .card-container {
+    flex-direction: column;
+    gap: 3rem;
+    margin: 2rem 0;
+  }
+  .round-image{
+    height: 20%;
+    width: 100%;
+  }
+  .client-button span{
+    font-size: 3rem;
+  }
+  .buttons-container{
+    flex-direction: row;
+  }
+  .AddClientPage {
+    padding: 5rem 0;
+  }
+  .client-form {
+    width: 80%;
+    gap: 2rem;
   }
   
 }

@@ -13,6 +13,8 @@ const SearchByFilter = ({ filter, handleSearchChange, handleCheckboxChange }) =>
         placeholder={getPlaceholder(filter)}
         handleSearchChange={handleSearchChange}
       />
+      <div className="checkbox-container">
+
       <label htmlFor="cash-filter">Cash</label>
       <input
         type="checkbox"
@@ -29,6 +31,7 @@ const SearchByFilter = ({ filter, handleSearchChange, handleCheckboxChange }) =>
         checked={filter === "id"}
         onChange={handleCheckboxChange}
       />
+      </div>
     </div>
   );
 };

@@ -122,9 +122,7 @@
   .HomePage {
     gap: 2.5rem;
   }
-  .greet-container {
-    padding-top: 4rem;
-  }
+ 
   .greet-container h1 {
     font-size: 3rem;
   }
@@ -218,5 +216,6 @@
   .ClientActionCard {
     flex-direction: column;
   }
+  
   
 }

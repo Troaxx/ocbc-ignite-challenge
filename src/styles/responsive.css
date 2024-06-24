@@ -174,5 +174,18 @@
   .icon-link {
     font-size: 2rem;
   }
+  .search-container{
+    flex-direction: column;
+  }
+  .ClientSearch {
+    width: 80%;
+  }
+  .client-card{
+    flex-direction: column;
+  }
+  .ClientManagePage{
+    gap: 2rem;
+    padding: 3rem 0;
+  }
   
 }

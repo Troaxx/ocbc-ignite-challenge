@@ -16,7 +16,7 @@ export const getClientById = async (clientId) => {
   try {
     const docRef = doc(db, CLIENTS_COLLECTION, clientId);
     const docSnap = await getDoc(docRef);
-
+    
     if (docSnap.exists()) {
       return { id: docSnap.id, ...docSnap.data() };
     } else {

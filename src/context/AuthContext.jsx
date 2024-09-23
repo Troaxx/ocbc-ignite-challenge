@@ -24,8 +24,6 @@ export const AuthProvider = ({ children }) => {
     setError(null)
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log(userCredential);//for presentation 
-      console.log(userCredential.user); //for presentation
       setUser(userCredential.user); 
       return userCredential.user;
     } catch (err) {

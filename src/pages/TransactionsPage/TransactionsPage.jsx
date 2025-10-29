@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 
-import { updateClient } from '../../services/firebaseApi';
 import { ErrorComponent, SearchByFilter, ClientActionModal, ClientsList } from "../../components";
 import { useFetchClients } from "../../context/FetchClientsContext";
 import { filterClients } from '../../utils/filters';

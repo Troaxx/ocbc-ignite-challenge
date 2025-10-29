@@ -4,10 +4,7 @@
  flex-direction: column;
  align-items: flex-start;
  justify-content: space-between;
- background-image: url(/public/assets/images/bgc-image.jpg);
- background-repeat: no-repeat;
- background-position: center;
- background-size: cover;
+ background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 50%, #f5f7fa 100%);
 }
 
 main {
@@ -17,5 +14,6 @@ main {
   align-items: center;
   justify-content: flex-start;
   flex-direction: column;
+  padding: 1rem 0;
 }
 

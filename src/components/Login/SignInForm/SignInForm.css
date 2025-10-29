@@ -29,13 +29,14 @@
 .sign-in-button{
   padding: 1rem 3rem;
   color: white;
-  background-color: rgb(73, 73, 170);
+  background-color: #EE3124;
+  font-weight: 500;
 }
 
 .sign-in-button:hover {
-  color: rgb(73, 73, 170);
-  background-color: white;
-  box-shadow: 1px 1px 6px 1px rgb(73, 73, 170);
+  color: white;
+  background-color: #c2271c;
+  box-shadow: 0 4px 12px rgba(238, 49, 36, 0.3);
 }
 
 .forget-link {
@@ -48,7 +49,7 @@
 }
 
 .forget-link:hover {
-  color: rgb(73, 73, 170);
+  color: #EE3124;
 }
 
 .error-message {

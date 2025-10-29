@@ -13,14 +13,14 @@
   border: none;
   border-bottom: 1px solid #9e9d9d;
   padding: 0.5rem;
-  color: rgb(0, 0, 160);
+  color: #333333;
 }
 .input-group input[type="email"]:focus,
 .input-group input[type="password"]:focus {
   box-shadow: none;
   background-color: transparent;
   outline: none;
-  border-bottom: 1px solid #000000;
+  border-bottom: 2px solid #EE3124;
 }
 
 .input-group input[type="checkbox"] {

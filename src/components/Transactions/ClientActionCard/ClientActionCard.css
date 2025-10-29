@@ -1,5 +1,5 @@
 .ClientActionCard {
-  border: 1px solid #ccc;
+  border: 1px solid #e0e0e0;
   border-radius: 1rem;
   padding: 20px;
   min-width: 60%;
@@ -7,15 +7,17 @@
   align-items: center;
   justify-content: space-around;
   gap: 1rem;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.788);
-  background-color: #ffffff59;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: white;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
 }
 
 .ClientActionCard:hover {
-  transform: scale(1.05);
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(238, 49, 36, 0.2);
+  border-color: #EE3124;
 }
 
 .ClientActionCard h3 {
@@ -23,14 +25,16 @@
 }
 
 .action-button {
-  background-color: rgba(72, 180, 77, 0.781);
-  box-shadow: 0 0 2px 1px rgb(0, 0, 0);
+  background-color: #EE3124;
+  box-shadow: 0 2px 8px rgba(238, 49, 36, 0.3);
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  color: white;
 }
 .action-button:hover {
-  background-color: #fff;
+  background-color: #c2271c;
+  box-shadow: 0 4px 12px rgba(238, 49, 36, 0.4);
 }
 
 

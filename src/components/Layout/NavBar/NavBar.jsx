@@ -43,13 +43,15 @@ const NavBar = () => {
   return (
     <nav className="nav-bar">
       <div className="logo-container">
-        <img className="logo" src="/assets/images/dy-bank-high-resolution-logo-black-transparent.png" alt="" onClick={handleLogoClick} />
+        <div className="logo-placeholder" onClick={handleLogoClick}>
+          <ICONS.Home className="logo-icon" />
+        </div>
       </div>
       <div className="hamburger" onClick={toggleMenu}>
         {isMenuOpen ? <ICONS.CloseX /> : <ICONS.Bars />}
       </div>
       <ul className={`nav-links ${isMenuOpen ? 'open' : ''}`}>
-        <li><NavLink className='nav-link' to={'/'}><ICONS.Home className="home-icon" /></NavLink></li>
+        <li><NavLink className='nav-link' to={'/'}>Home</NavLink></li>
         <li><NavLink className='nav-link' to={'/clientManage'}> Client Manage </NavLink></li>
         <li><NavLink className='nav-link' to={'/transactions'}> Transactions </NavLink></li>
         {isMenuOpen && <button className="logout-button button" onClick={handleLogOutClick}> LOGOUT <ICONS.Logout className="logout-icon" /></button>}

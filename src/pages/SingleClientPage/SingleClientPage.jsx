@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router";
 
 import ICONS from "../../models/icons";
 import { useFetchClients } from "../../context/FetchClientsContext";
-import { deleteClient, updateClient } from "../../services/firebaseApi";
 import { ErrorComponent, Loader, SingleClientBtn, SingleClientDetails } from "../../components";
 
 import './SingleClientPage.css';

@@ -1,9 +1,11 @@
 .Footer {
-  height: 10%;
-  padding: 4rem 0;
+  height: auto;
+  padding: 3rem 0;
   width: 100%;
-  background-color: rgba(255, 255, 255, 0.158);
+  background-color: white;
+  border-top: 1px solid #e0e0e0;
   display: flex;
+  margin-top: 4rem;
 }
 
 .footer-logo {
@@ -29,11 +31,11 @@
 }
 
 .copyrights a {
-  color: black;
+  color: #333333;
   text-decoration: underline;
 }
 .copyrights a:hover {
-  color: white;
+  color: #EE3124;
   text-decoration: underline;
 }
 
@@ -48,7 +50,7 @@
 }
 
 .icon-link {
-  color: black;
+  color: #333333;
   cursor: pointer;
   transition: all 0.3s ease;
 }

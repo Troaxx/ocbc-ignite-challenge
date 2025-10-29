@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-import { getClients } from "../services/firebaseApi";
+import mockApi from "../mock/mockApi";
 
 const FetchClientsContext = createContext();
 
@@ -14,7 +14,7 @@ export const FetchClientsProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const clientsData = await getClients();
+      const clientsData = await mockApi.getClients();
       setClients(clientsData);
     } catch (error) {
       setError('Failed to fetch clients.');

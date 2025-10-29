@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import { addClient } from "../../services/firebaseApi";
 import { useFetchClients } from "../../context/FetchClientsContext";
  
 import './AddClientPage.css';

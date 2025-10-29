@@ -4,20 +4,21 @@
   align-items: center;
   border: none;
   cursor: pointer;
-  background-color: transparent;
+  background-color: white;
   font-weight: bold;
   transition: all 0.3s ease;
   border-radius: 50%;
-  background-color: #ffffff54;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
 }
 
 .client-button:hover {
-  transform: scale(1.1);
-  background-color: #fffffff8;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(238, 49, 36, 0.3);
 }
 
 .remove-color {
-  color: rgba(255, 0, 0, 0.712);
+  color: #f44336;
 }
 
 .client-button span {

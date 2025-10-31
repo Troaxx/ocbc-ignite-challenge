@@ -1,8 +1,7 @@
-// Function to handle drawing money from cash and credit
 export const handleDraw = (newValue, client) => {
-  let remainingDraw = newValue;
-  let updatedCash = client.cash;
-  let updatedCredit = client.credit;
+  let remainingDraw = parseFloat(newValue) || 0;
+  let updatedCash = parseFloat(client.cash) || 0;
+  let updatedCredit = parseFloat(client.credit) || 0;
 
   if (remainingDraw <= updatedCash) {
     updatedCash -= remainingDraw;
@@ -23,32 +22,31 @@ export const handleDraw = (newValue, client) => {
   return { cash: updatedCash, credit: updatedCredit };
 };
 
-// Function to handle transferring money between clients
 export const handleTransfer = async (newValue, client, targetClientId, clients, updateClient) => {
-  let updatedCash = client.cash;
+  const transferAmount = parseFloat(newValue) || 0;
+  let updatedCash = parseFloat(client.cash) || 0;
 
-  if (newValue > updatedCash) {
+  if (transferAmount > updatedCash) {
     return { error: 'You cannot transfer more than available cash.' };
   }
 
-  updatedCash -= newValue;
+  updatedCash -= transferAmount;
 
   const targetClient = clients.find(c => c.id === targetClientId);
   if (!targetClient) {
     return { error: 'Target client not found.' };
   }
 
-  const targetUpdatedCash = (parseFloat(targetClient.cash) || 0) + newValue;
+  const targetUpdatedCash = (parseFloat(targetClient.cash) || 0) + transferAmount;
   await updateClient(targetClientId, { cash: targetUpdatedCash });
 
   return { cash: updatedCash };
 };
 
-// Function to get the handler for a given action type
 export const getActionHandler = (actionType) => {
   const actionHandlers = {
     
-    credit: (newValue) => ({ credit: newValue }),
+    credit: (newValue) => ({ credit: parseFloat(newValue) || 0 }),
 
     draw: (newValue, client) => {
       const result = handleDraw(newValue, client);
@@ -56,7 +54,11 @@ export const getActionHandler = (actionType) => {
       return result;
     },
 
-    deposit: (newValue, client) => ({ cash: client.cash + newValue }),
+    deposit: (newValue, client) => {
+      const depositAmount = parseFloat(newValue) || 0;
+      const currentCash = parseFloat(client.cash) || 0;
+      return { cash: currentCash + depositAmount };
+    },
 
     transfer: async (newValue, client, targetClientId, clients, updateClient) => {
       const result = await handleTransfer(newValue, client, targetClientId, clients, updateClient);

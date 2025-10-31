@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { user as mockUser } from "../mock/mockData";
+import databaseData from "../data/database.json";
 
 const AuthContext = createContext();
+
+const mockUser = databaseData.user;
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -9,16 +11,18 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Simulate a logged-in user
-    setUser(mockUser);
+    const storedUser = localStorage.getItem('ocbc_auth_user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
     setLoading(false);
   }, []);
 
   const login = async (email, password) => {
     setError(null);
-    // Mock login logic
     if (email && password) {
       setUser(mockUser);
+      localStorage.setItem('ocbc_auth_user', JSON.stringify(mockUser));
       return mockUser;
     }
     setError(new Error("Invalid credentials"));
@@ -26,6 +30,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     setUser(null);
+    localStorage.removeItem('ocbc_auth_user');
   };
 
   return (

@@ -1,0 +1,65 @@
+{
+  "clients": [
+    {
+      "id": "1",
+      "name": "John Doe",
+      "age": 35,
+      "city": "Singapore",
+      "phone": "123-456-7890",
+      "cash": 5000,
+      "credit": 1500,
+      "isActive": true,
+      "image": ""
+    },
+    {
+      "id": "2",
+      "name": "Jane Smith",
+      "age": 28,
+      "city": "Hong Kong",
+      "phone": "098-765-4321",
+      "cash": 10000,
+      "credit": 2500,
+      "isActive": true,
+      "image": ""
+    },
+    {
+      "id": "3",
+      "name": "Peter Jones",
+      "age": 42,
+      "city": "Kuala Lumpur",
+      "phone": "555-555-5555",
+      "cash": 7500,
+      "credit": 3000,
+      "isActive": true,
+      "image": ""
+    },
+    {
+      "id": "4",
+      "name": "Sarah Williams",
+      "age": 31,
+      "city": "Jakarta",
+      "phone": "111-222-3333",
+      "cash": 12000,
+      "credit": 2000,
+      "isActive": false,
+      "image": ""
+    },
+    {
+      "id": "5",
+      "name": "Michael Chen",
+      "age": 45,
+      "city": "Singapore",
+      "phone": "444-555-6666",
+      "cash": 8500,
+      "credit": 4000,
+      "isActive": true,
+      "image": ""
+    }
+  ],
+  "user": {
+    "uid": "admin-user-id",
+    "email": "admin@ocbc.com",
+    "displayName": "Admin User"
+  }
+}
+

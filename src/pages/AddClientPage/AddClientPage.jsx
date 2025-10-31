@@ -19,7 +19,7 @@ const AddClientPage = () => {
 
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { fetchClients } = useFetchClients();
+  const { addClient } = useFetchClients();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -36,8 +36,14 @@ const AddClientPage = () => {
     setLoading(true);
 
     try {
-      await addClient(formData.id, formData);
-      fetchClients();
+      const clientDataToSubmit = {
+        ...formData,
+        age: parseInt(formData.age) || 0,
+        cash: parseFloat(formData.cash) || 0,
+        credit: parseFloat(formData.credit) || 0
+      };
+      
+      await addClient(clientDataToSubmit);
       navigate('/clientManage');
       setFormData({
         age: '',
@@ -46,8 +52,8 @@ const AddClientPage = () => {
         isActive: true,
         name: '',
         phone: '',
-        cash: '',
-        credit: '',
+        cash: 0,
+        credit: 100,
       });
     } catch (error) {
       setError(error.message);

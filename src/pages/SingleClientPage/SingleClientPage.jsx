@@ -11,7 +11,7 @@ const SingleClientPage = () => {
 
   const { clientId } = useParams();
   const navigate = useNavigate();
-  const { clients, fetchClients, loading: clientsLoading, error: clientsError } = useFetchClients();
+  const { clients, updateClient, deleteClient, loading: clientsLoading, error: clientsError } = useFetchClients();
   const [editData, setEditData] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
@@ -26,8 +26,13 @@ const SingleClientPage = () => {
     setActionLoading(true);
     setActionError(null);
     try {
-      await updateClient(clientId, editData);
-      fetchClients();
+      const updatedClientData = {
+        ...editData,
+        age: parseInt(editData.age) || 0,
+        cash: parseFloat(editData.cash) || 0,
+        credit: parseFloat(editData.credit) || 0
+      };
+      await updateClient(clientId, updatedClientData);
       setEditMode(false);
     } catch (error) {
       setActionError(error.message);
@@ -41,7 +46,6 @@ const SingleClientPage = () => {
     setActionError(null);
     try {
       await deleteClient(clientId);
-      fetchClients();
       navigate('/clientManage');
     } catch (error) {
       setActionError(error.message);

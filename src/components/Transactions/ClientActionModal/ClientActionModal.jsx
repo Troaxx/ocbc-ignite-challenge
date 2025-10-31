@@ -71,7 +71,15 @@ const ClientActionModal = ({
                   : `Change Credit for ${client.name}`}
           </h2>
           <p>ID: {client.id}</p>
-          <p>{currentLabel}: {getCurrentValue()}</p>
+          {actionType === "draw" ? (
+            <>
+              <p>Current Cash: ${parseFloat(client.cash) || 0}</p>
+              <p>Credit Limit: ${parseFloat(client.credit) || 0}</p>
+              <p><strong>Total Available: ${(parseFloat(client.cash) || 0) + (parseFloat(client.credit) || 0)}</strong></p>
+            </>
+          ) : (
+            <p>{currentLabel}: {getCurrentValue()}</p>
+          )}
           <form onSubmit={handleSubmit}>
             {actionType === "transfer" && (
               <>

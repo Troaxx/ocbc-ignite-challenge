@@ -17,7 +17,7 @@ const TransactionsPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [actionType, setActionType] = useState("");
   const [actionError, setActionError] = useState(null);
-  const { clients, fetchClients } = useFetchClients();
+  const { clients, updateClient, fetchClients } = useFetchClients();
   const { currentLabel, inputLabel, buttonLabel } = getLabels(actionType);
 
   useEffect(() => {
@@ -65,7 +65,6 @@ const TransactionsPage = () => {
       }
 
       await updateClient(clientId, updatedData);
-      await fetchClients();
       handleCloseModal();
     } catch (error) {
       setActionError(error.message);

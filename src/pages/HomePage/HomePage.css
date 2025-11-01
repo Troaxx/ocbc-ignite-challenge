@@ -1,77 +1,106 @@
+:root{
+  --primary: #EE3124;
+  --muted: #666666;
+  --text: #222222;
+  --bg: #f6f7fb;
+  --card: #ffffff;
+}
+
 .HomePage {
   display: flex;
   flex-direction: column;
-  width: 90%;
-  max-width: 1400px;
-  height: 100%;
-  gap: 1.5rem;
+  width: 95%;
+  max-width: 1200px;
+  margin: 2.5rem auto;
+  min-height: calc(100vh - 140px);
+  gap: 1.25rem;
+  color: var(--text);
 }
 
 .greet-container {
   width: 100%;
-  height: auto;
-  padding: 1rem 0;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(90deg, rgba(238,49,36,0.04), rgba(255,255,255,0));
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(16,24,40,0.04);
+  border-left: 4px solid rgba(238,49,36,0.12);
 }
 .greet-container h1 {
-  font-size: 1.5rem;
-  color: #EE3124;
+  font-size: 1.85rem;
+  color: var(--primary);
   font-weight: 700;
-  margin-bottom: 0.3rem;
-  letter-spacing: -0.5px;
+  margin: 0 0 0.25rem 0;
+  letter-spacing: -0.2px;
 }
 .greet-container h2 {
-  font-size: 1rem;
+  font-size: 1.05rem;
   color: #333333;
-  font-weight: 500;
-  margin-bottom: 0.25rem;
+  font-weight: 600;
+  margin: 0 0 0.3rem 0;
 }
 .greet-container h3 {
-  font-size: 0.9rem;
-  color: #666666;
+  font-size: 0.95rem;
+  color: var(--muted);
   font-weight: 400;
+  margin: 0;
 }
 
 .operations-container {
   width: 100%;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
 }
 
 .operations-box-container {
   width: 100%;
-  height: auto;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  padding: 1rem;
+  gap: 1rem;
+  padding: 1rem 0;
+  align-items: stretch;
 }
 
 .operations-box-container .operation-box {
-  min-height: 120px;
-  max-height: 140px;
+  min-height: 130px;
+  max-height: none;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.HomePage .greet-container, .HomePage .operations-box-container {
-  opacity: 0; 
-  animation: fadeIn 1.5s ease-in-out forwards; 
-}
-
-
+.HomePage .greet-container,
 .HomePage .operations-box-container {
-  animation-delay: 0.5s; 
+  opacity: 0;
+  animation: fadeIn 0.8s ease-in-out forwards;
+}
+
+.HomePage .operations-box-container { animation-delay: 0.12s; }
+
+/* responsive: 3 cols -> 2 -> 1 */
+@media (max-width: 900px) {
+  .operations-box-container { grid-template-columns: repeat(2, 1fr); }
+  .greet-container h1 { font-size: 1.6rem; }
+}
+
+@media (max-width: 560px) {
+  .HomePage { margin: 1rem auto; gap: 1rem; }
+  .operations-box-container { grid-template-columns: 1fr; gap: 0.75rem; }
+  .greet-container { padding: 1rem; border-radius: 10px; }
+  .greet-container h1 { font-size: 1.35rem; }
+  .greet-container h2 { font-size: 0.98rem; }
+}
+
+@media (min-width: 1200px) {
+  /* desktop: larger hero title and slightly increased card spacing */
+  .greet-container h1 { font-size: 2.4rem; }
+  .operations-box-container { gap: 1.25rem; }
+  .operations-box-container .operation-box { min-height: 150px; }
+}
+
+/* subtle page background to separate content from app background */
+body, #root {
+  background-color: var(--bg);
 }
 
 

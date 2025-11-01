@@ -48,20 +48,24 @@ const SignInForm = () => {
         <FormInput
           label="Email"
           type="email"
+          name="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="email-input"
+          placeholder="you@company.com"
         />
         {emailError && <p className="error-message">{emailError}</p>}
         <FormInput
           label="Password"
           type="password"
+          name="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="password-input"
+          placeholder="Enter your password"
         />
         <div className="login-button-container">
-          <button className="sign-in-button button" type="submit">
+          <button aria-label="Sign in" className="sign-in-button button" type="submit">
             SIGN IN
           </button>
           <Link className="forget-link" to='https://github.com/DanielYehezkely/bank-management-react/blob/main/README.md'>Forgot your password?</Link>

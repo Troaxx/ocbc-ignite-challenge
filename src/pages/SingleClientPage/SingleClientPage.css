@@ -1,27 +1,29 @@
 .card-container {
-  background-color: white;
-  border-radius: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 60%;
-  height: 60%;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(16,24,40,0.06);
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: 320px 1fr 220px;
+  gap: 1.25rem;
+  width: min(1100px, 95%);
+  margin: 2rem auto;
   position: relative;
-  border: 1px solid #e0e0e0;
+  align-items: start;
+  border: 1px solid #f0f0f0;
 }
 
 .pro {
   background-color: #4CAF50;
   color: white;
-  padding: 5px 10px;
-  border-radius: 3px;
-  font-size: 1.4rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.95rem;
   position: absolute;
-  top: 2rem;
-  left: 2rem;
-  font-weight: 500;
+  top: 1rem;
+  right: 1rem;
+  font-weight: 600;
+  box-shadow: 0 6px 18px rgba(16,24,40,0.06);
 }
 
 .pro.inactive {
@@ -29,16 +31,33 @@
 }
 
 .round-image {
-  border-radius: 2rem;
-  width: 40%;
+  border-radius: 10px;
+  width: 100%;
   height: 100%;
+  min-height: 260px;
   object-fit: cover;
+  box-shadow: 0 6px 18px rgba(16,24,40,0.04);
 }
 
 .buttons-container {
-  height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
-  gap: 2rem;
+  gap: 1rem;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+/* Make layout stack on smaller screens */
+@media (max-width: 900px) {
+  .card-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    padding: 1rem;
+  }
+  .round-image { min-height: 160px; width: 100%; }
+  .buttons-container { flex-direction: row; justify-content: space-between; }
+}
+
+@media (min-width: 1400px) {
+  .card-container { grid-template-columns: 380px 1fr 260px; }
 }

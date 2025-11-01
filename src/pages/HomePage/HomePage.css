@@ -10,14 +10,15 @@
 .greet-container {
   width: 100%;
   height: auto;
-  padding: 1rem 0;
+  padding: 1.5rem 0; /* increased vertical padding to enlarge header area */
 }
 .greet-container h1 {
-  font-size: 1.5rem;
-  color: #EE3124;
-  font-weight: 700;
-  margin-bottom: 0.3rem;
-  letter-spacing: -0.5px;
+  font-size: 3rem;              /* Bigger */
+  font-weight: 800;             /* Strong bold */
+  color: #EE3124;               /* Your red brand color */
+  margin-bottom: 0.6rem;
+  letter-spacing: -1px;         /* Tighter typography */
+  line-height: 1.05;
 }
 .greet-container h2 {
   font-size: 1rem;

@@ -1,51 +1,107 @@
 .NotFoundPage {
-  height: 100vh;
+  --bg: #F6F7FB;
+  --card: #ffffff;
+  --muted: #6B7280;
+  --accent: #EE3124;
+  --soft: #EEF2F6;
+  --radius: 14px;
+
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f8f9fa; 
+  padding: 3rem 1rem;
+  background-color: var(--bg);
+  box-sizing: border-box;
 }
 
 .not-found-content {
-  text-align: center;
-  padding: 20px;
-  border-radius: 10px;
-  background-color: #fff; 
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-  max-width: 600px; 
   width: 100%;
+  max-width: 920px;
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 2rem;
+  align-items: center;
+  background: linear-gradient(180deg, var(--card) 0%, var(--card) 100%);
+  padding: 2.25rem;
+  border-radius: var(--radius);
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.06);
+}
+
+.not-found-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--soft);
+  border-radius: 10px;
+  height: 240px;
+}
+
+.not-found-visual img {
+  max-width: 100%;
+  height: auto;
+}
+
+.not-found-text {
+  padding: 0.25rem 0;
 }
 
 .error-code {
-  font-size: 96px;
-  font-weight: bold;
-  color: #ddd; 
-  margin: 0;
+  font-size: 4.25rem;
+  font-weight: 800;
+  color: rgba(15, 23, 42, 0.08);
+  margin: 0 0 0.25rem 0;
 }
 
 .error-message-not-found {
-  font-size: 24px;
-  color: #272727; 
-  margin: 10px 0;
+  font-size: 1.6rem;
+  color: #0F172A;
+  margin: 0.25rem 0 0.75rem 0;
+  line-height: 1.15;
 }
 
 .error-description {
-  font-size: 16px;
-  color: #666;
-  margin-bottom: 20px;
+  font-size: 1rem;
+  color: var(--muted);
+  margin-bottom: 1.25rem;
 }
 
 .home-button-not-found {
-  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background-color: var(--accent);
   color: #fff;
-  background-color: #007bff; 
-  padding: 10px 20px;
+  padding: 0.7rem 1rem;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
+  font-weight: 700;
   cursor: pointer;
-  transition: var(--transition);
+  box-shadow: 0 8px 20px rgba(238, 49, 36, 0.12);
+  transition: transform 140ms ease, box-shadow 180ms ease, background-color 140ms ease;
 }
 
-.home-button:hover {
-  background-color: #0056b3; 
+.home-button-not-found:hover,
+.home-button-not-found:focus {
+  transform: translateY(-2px);
+  background-color: #d93b2e;
+  box-shadow: 0 12px 28px rgba(238, 49, 36, 0.16);
+}
+
+.home-button-not-found:active {
+  transform: translateY(0);
+}
+
+/* responsive: stack content and shrink visual */
+@media (max-width: 900px) {
+  .not-found-content { grid-template-columns: 1fr; padding: 1.5rem; gap: 1rem; }
+  .not-found-visual { height: 180px; }
+  .error-code { font-size: 3rem; }
+  .error-message-not-found { font-size: 1.3rem; }
+}
+
+@media (max-width: 420px) {
+  .not-found-content { padding: 1rem; }
+  .error-code { font-size: 2.4rem; }
+  .error-message-not-found { font-size: 1.1rem; }
 }

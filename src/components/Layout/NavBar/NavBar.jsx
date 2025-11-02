@@ -43,9 +43,12 @@ const NavBar = () => {
   return (
     <nav className="nav-bar">
       <div className="logo-container">
-        <div className="logo-placeholder" onClick={handleLogoClick}>
-          <ICONS.Home className="logo-icon" />
-        </div>
+        <img 
+          src="/assets/images/ocbc_logo.png" 
+          alt="OCBC Logo" 
+          className="logo" 
+          onClick={handleLogoClick}
+        />
       </div>
       <div className="hamburger" onClick={toggleMenu}>
         {isMenuOpen ? <ICONS.CloseX /> : <ICONS.Bars />}

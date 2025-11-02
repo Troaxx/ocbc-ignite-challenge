@@ -3,48 +3,57 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  background-color: #f0efef;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  background-color: #f6f7fb;
 }
 
 .login-box-container {
-  width: 65%;
-  height: 75%;
-  border-radius: 1rem;
-  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
-    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
-    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+  width: 100%;
+  max-width: 1000px;
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(16,24,40,0.08);
   position: relative;
-  background-color: rgb(255, 255, 255);
+  background-color: #ffffff;
   display: flex;
-  align-items: flex-end;
+  overflow: hidden;
 }
 
 .login-image {
-  background: url(/assets/images/difference-between-retail-banking.jpg)
-    no-repeat center;
+  background: url(/assets/images/difference-between-retail-banking.jpg) no-repeat center;
   background-size: cover;
-  width: 60%;
-  height: 100%;
-  /* border-radius: 0rem; */
-  clip-path: polygon(0% 0%, 100% 0, 60% 49%, 100% 100%, 0% 100%);
+  width: 55%;
+  min-height: 380px;
 }
 
 .login-form-container {
-  width: 40%;
-  height: 85%;
+  width: 45%;
+  padding: 2.25rem 2rem;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 4rem;
+  align-items: stretch;
+  justify-content: center;
+  gap: 1.25rem;
 }
 
 .login-title {
-  font-size: 5rem;
-  font-weight: 600;
-  width: 75%;
+  font-size: 2.2rem;
+  font-weight: 700;
   color: #EE3124;
-  text-align: center;
+  margin: 0 0 0.25rem 0;
+}
+
+/* Responsive: stack image above form on small screens */
+@media (max-width: 760px) {
+  .login-box-container { flex-direction: column; }
+  .login-image { width: 100%; height: 160px; min-height: 120px; }
+  .login-form-container { width: 100%; padding: 1rem 1rem 2rem 1rem; }
+  .login-title { text-align: left; font-size: 1.6rem; }
+}
+
+@media (min-width: 1200px) {
+  .login-form-container { padding: 3rem 3rem; }
+  .login-title { font-size: 2.6rem; }
 }
 
 

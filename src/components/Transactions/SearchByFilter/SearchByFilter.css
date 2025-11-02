@@ -1,14 +1,33 @@
-.search-container label {
-  font-size: 1.6rem;
+.search-container {
+  width: 95%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
+
+.search-container label {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
 .search-container input[type=checkbox] {
   cursor: pointer;
+  width: 20px;
+  height: 20px;
 }
+
+.search-container input[type=text] {
+  font-size: 1.3rem;
+  padding: 0.8rem 1.2rem;
+}
+
 .no-clients-message {
   align-self: center;
+  font-size: 1.5rem;
 }
 
 .checkbox-container {
   display: flex;
   gap: 2rem;
+  font-size: 1.3rem;
 }

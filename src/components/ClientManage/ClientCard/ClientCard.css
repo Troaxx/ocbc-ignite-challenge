@@ -1,60 +1,41 @@
 .client-card {
-  border: 1px solid #e0e0e0;
+  border: 2px solid #e0e0e0;
   border-radius: 1rem;
-  padding: 20px;
-  min-width: 60%;
+  width: 100%;
+  max-width: 100%;
+  padding: 1.8rem;
   display: flex;
   align-items: center;
-  justify-content: space-around;
-  gap: 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  justify-content: space-between;
+  gap: 1.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   background-color: white;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .client-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 16px rgba(238, 49, 36, 0.2);
+  transform: translateY(-8px);
+  box-shadow: 0 8px 24px rgba(238, 49, 36, 0.2);
   border-color: #EE3124;
 }
 
-.inactive {
-  background-color: #ff6d6dd0;
-}
+.inactive { background-color: #fff6f6; }
 
-.inactive:hover {
-  transform: none;
-}
+.client-info { flex: 1 1 auto; }
+.client-name { font-size: 1.6rem; font-weight: 700; color: #222; margin-bottom: 0.5rem; }
+.client-meta { display: flex; flex-wrap: wrap; gap: 0.8rem; color: #555; font-size: 1.2rem; }
+.client-meta .meta-item { background: #fafafa; padding: 0.3rem 0.7rem; border-radius: 6px; border: 1px solid #e0e0e0; }
 
-.client-card h3 {
-  font-size: 1.6em;
-}
+.client-actions { display: flex; flex-direction: column; gap: 0.8rem; align-items: flex-end; }
+.client-actions .badge { padding: 0.4rem 0.9rem; border-radius: 999px; font-weight: 600; font-size: 1.1rem; }
+.client-active { background: rgba(76,175,80,0.15); color: #2e7d32; border: 1px solid rgba(76,175,80,0.2); }
+.client-not-active { background: rgba(244,67,54,0.1); color: #b71c1c; border: 1px solid rgba(244,67,54,0.15); }
 
-.client-detail {
-  font-size: 1.2rem;
-}
+.manage-button { background-color: #EE3124; box-shadow: 0 4px 12px rgba(238,49,36,0.15); color: white; padding: 0.7rem 1.1rem; border-radius: 8px; border: none; display: inline-flex; align-items: center; gap: 0.6rem; font-weight: 600; font-size: 1.1rem; }
+.manage-button svg { width: 1.3rem; height: 1.3rem; }
+.manage-button:hover { background-color: #c2271c; box-shadow: 0 8px 20px rgba(238,49,36,0.25); }
 
-.client-active {
-  font-size: 1.6rem;
-  color: #4CAF50;
-  font-weight: 500;
-}
-
-.client-not-active {
-  font-size: 1.6rem;
-  color: #f44336;
-  font-weight: 500;
-}
-
-.manage-button {
-  background-color: #EE3124;
-  box-shadow: 0 2px 8px rgba(238, 49, 36, 0.3);
-  display: flex;
-  align-items: center;
-  color: white;
-}
-.manage-button:hover {
-  background-color: #c2271c;
-  box-shadow: 0 4px 12px rgba(238, 49, 36, 0.4);
+@media (max-width: 680px) {
+  .client-card { flex-direction: column; align-items: stretch; }
+  .client-actions { flex-direction: row; justify-content: space-between; align-items: center; }
 }

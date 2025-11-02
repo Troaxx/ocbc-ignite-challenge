@@ -18,8 +18,7 @@
     "test:report": "playwright show-report",
     "test:coverage": "playwright test && npm run coverage:report",
     "coverage:report": "nyc report --reporter=html --reporter=text --reporter=lcov",
-    "coverage:view": "open coverage/index.html",
-    "test:selenium": "node tests/selenium/run-selenium-tests.js"
+    "coverage:view": "open coverage/index.html"
   },
   "dependencies": {
     "react": "^18.2.0",
@@ -28,8 +27,7 @@
     "react-router": "^6.23.1",
     "react-router-dom": "^6.23.1",
     "react-select": "^5.8.0",
-    "react-toastify": "^10.0.5",
-    "selenium-webdriver": "^4.38.0"
+    "react-toastify": "^10.0.5"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",
@@ -41,6 +39,7 @@
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
-    "vite": "^5.2.0"
+    "vite": "^5.2.0",
+    "vite-plugin-istanbul": "^7.2.0"
   }
 }

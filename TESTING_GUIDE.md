@@ -1,14 +1,14 @@
-# Complete Testing Guide
+# Playwright Testing Guide
 
 ## Overview
-This project includes comprehensive automated testing using **Playwright** (modern browsers) and **Selenium** (legacy browsers), covering 60+ test cases across all critical features.
+This project uses **Playwright** for comprehensive automated testing across all modern browsers (Chromium, Firefox, and WebKit/Safari), covering 50+ test cases across all critical features.
 
 ---
 
 ## Test Distribution
 
-### Playwright Tests (Modern Browsers)
-**57+ Tests** - Comprehensive feature coverage
+### Playwright Tests
+**50+ Tests** - Comprehensive feature coverage
 
 | Category | Tests | File |
 |----------|-------|------|
@@ -20,21 +20,6 @@ This project includes comprehensive automated testing using **Playwright** (mode
 | Error Handling | 7 | `error-handling.spec.js` |
 
 **Browsers**: Chromium, Firefox, WebKit (Safari)
-
-### Selenium Tests (Legacy Browsers)
-**7 Tests** - Critical path coverage
-
-| Test | Description |
-|------|-------------|
-| TC-001 | Authentication |
-| TC-005 | Protected Routes |
-| TC-013 | Load Clients |
-| TC-026 | Add Client |
-| TC-008 | Navigation |
-| TC-051 | Page Rendering |
-| TC-014 | Search Functionality |
-
-**Browsers**: Chrome, Firefox, (IE11 with limitations)
 
 ---
 
@@ -57,12 +42,11 @@ npm run dev
 
 ### 4. Run Tests
 
-#### Playwright Tests
 ```bash
 # Run all tests
 npm test
 
-# Run with UI mode (recommended for first-time)
+# Run with UI mode (recommended for development)
 npm run test:ui
 
 # Run in headed mode (see browser)
@@ -78,19 +62,9 @@ npm run test:debug
 
 # View test report
 npm run test:report
-```
 
-#### Selenium Tests
-```bash
-# Ensure dev server is running first
-npm run dev
-
-# In another terminal
-npm run test:selenium
-
-# Specific browser
-SELENIUM_BROWSER=chrome npm run test:selenium
-SELENIUM_BROWSER=firefox npm run test:selenium
+# Run tests with code coverage
+npm run test:coverage
 ```
 
 ---
@@ -106,8 +80,7 @@ SELENIUM_BROWSER=firefox npm run test:selenium
 ✅ Session persistence  
 ✅ Logout functionality  
 
-**Priority**: P0 (Critical)  
-**Tools**: Both Playwright & Selenium
+**Priority**: P0 (Critical)
 
 ---
 
@@ -118,8 +91,7 @@ SELENIUM_BROWSER=firefox npm run test:selenium
 ✅ Back button navigation  
 ✅ Client card navigation  
 
-**Priority**: P2 (Medium)  
-**Tools**: Playwright (+ Selenium for critical paths)
+**Priority**: P2 (Medium)
 
 ---
 
@@ -136,8 +108,7 @@ SELENIUM_BROWSER=firefox npm run test:selenium
 ✅ Delete client  
 ✅ Active/Inactive status  
 
-**Priority**: P1 (High)  
-**Tools**: Playwright
+**Priority**: P1 (High)
 
 ---
 
@@ -149,8 +120,7 @@ SELENIUM_BROWSER=firefox npm run test:selenium
 ✅ Redirect after success  
 ✅ Error handling  
 
-**Priority**: P0 (Critical)  
-**Tools**: Both Playwright & Selenium
+**Priority**: P0 (Critical)
 
 ---
 
@@ -170,8 +140,7 @@ SELENIUM_BROWSER=firefox npm run test:selenium
 ✅ Disabled buttons for inactive clients  
 ✅ Numeric persistence  
 
-**Priority**: P0 (Critical for core operations)  
-**Tools**: Playwright
+**Priority**: P0 (Critical for core operations)
 
 ---
 
@@ -182,8 +151,7 @@ SELENIUM_BROWSER=firefox npm run test:selenium
 ✅ Small screen layout  
 ✅ Navigation accessibility  
 
-**Priority**: P2 (Medium)  
-**Tools**: Playwright
+**Priority**: P2 (Medium)
 
 ---
 
@@ -196,8 +164,30 @@ SELENIUM_BROWSER=firefox npm run test:selenium
 ✅ Not found errors  
 ✅ Database integrity  
 
-**Priority**: P1 (High)  
-**Tools**: Playwright
+**Priority**: P1 (High)
+
+---
+
+## Code Coverage
+
+This project includes code coverage tracking using Istanbul/NYC. The tests instrument your React code and generate coverage reports showing which lines, branches, functions, and statements are tested.
+
+### View Coverage Report
+```bash
+# Run tests with coverage
+npm run test:coverage
+
+# View HTML report
+npm run coverage:view
+```
+
+### Coverage Thresholds
+- Lines: 70%
+- Branches: 60%
+- Functions: 70%
+- Statements: 70%
+
+Reports are generated in the `coverage/` directory.
 
 ---
 
@@ -213,8 +203,7 @@ await page.evaluate(() => {
 ```
 
 ### Test Data Prefixes
-- Playwright: `TEST{timestamp}` or `DELETE{timestamp}`
-- Selenium: `SEL{timestamp}`
+- Test clients: `TEST{timestamp}` or `DELETE{timestamp}`
 
 ### Manual Reset
 ```javascript
@@ -233,11 +222,9 @@ Tests run automatically on:
 - Pull requests
 - Manual workflow dispatch
 
-See `.github/workflows/playwright.yml`
-
 ### Expected Results
 - **Pass Rate**: 95%+
-- **Duration**: 2-3 minutes (Playwright), 1-2 minutes (Selenium)
+- **Duration**: 2-3 minutes
 - **Retries**: 2 attempts on failure
 
 ---
@@ -317,6 +304,7 @@ await page.waitForSelector('.element');
 **Solution**: Ensure `beforeEach` cleanup runs
 ```javascript
 test.beforeEach(async ({ page }) => {
+  await page.goto('/login');
   await page.evaluate(() => localStorage.clear());
 });
 ```
@@ -325,30 +313,30 @@ test.beforeEach(async ({ page }) => {
 
 ## Writing New Tests
 
-### Playwright Template
+### Test Template
 ```javascript
-test('TC-XXX: Description', async ({ page }) => {
-  // Setup
-  await page.goto('/path');
-  
-  // Action
-  await page.fill('input', 'value');
-  await page.click('button');
-  
-  // Assert
-  await expect(page.locator('.element')).toBeVisible();
-  await expect(page).toHaveURL('/expected');
-});
-```
+import { test, expect } from '@playwright/test';
+import { loginAsAdmin, resetDatabase } from './helpers/test-helpers';
 
-### Selenium Template
-```javascript
-await runner.test('TC-XXX: Description', async () => {
-  await runner.driver.get(`${BASE_URL}/path`);
-  const element = await runner.waitAndFindElement(By.css('.selector'));
-  await element.click();
-  const text = await element.getText();
-  if (!text.includes('expected')) throw new Error('Failed');
+test.describe('Feature Name', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/login');
+    await resetDatabase(page);
+    await loginAsAdmin(page);
+  });
+
+  test('TC-XXX: Description', async ({ page }) => {
+    // Setup
+    await page.goto('/path');
+    
+    // Action
+    await page.fill('input[type="text"]', 'value');
+    await page.click('button[type="submit"]');
+    
+    // Assert
+    await expect(page.locator('.element')).toBeVisible();
+    await expect(page).toHaveURL('/expected');
+  });
 });
 ```
 
@@ -371,22 +359,23 @@ await runner.test('TC-XXX: Description', async () => {
 
 ## Performance Metrics
 
-| Metric | Playwright | Selenium |
-|--------|-----------|----------|
-| Total Tests | 57+ | 7 |
-| Avg Test Time | 2-5s | 5-10s |
-| Total Duration | 2-3min | 1-2min |
-| Parallel | Yes | No |
-| Pass Rate | 95%+ | 95%+ |
+| Metric | Value |
+|--------|-------|
+| Total Tests | 50+ |
+| Avg Test Time | 2-5s |
+| Total Duration | 2-3min |
+| Parallel Execution | Yes |
+| Pass Rate | 95%+ |
+| Browsers Tested | 3 (Chromium, Firefox, WebKit) |
 
 ---
 
 ## Documentation
 
-- **Main README**: `tests/TESTING_README.md`
-- **Selenium Guide**: `tests/selenium/SELENIUM_README.md`
-- **Database Info**: `DATABASE_INFO.md`
 - **Test Helpers**: `tests/helpers/test-helpers.js`
+- **Database Info**: `DATABASE_INFO.md`
+- **Coverage Setup**: `COVERAGE_SETUP.md`
+- **Playwright Config**: `playwright.config.js`
 
 ---
 
@@ -402,6 +391,9 @@ npx playwright test tests/authentication.spec.js
 
 # Run tests matching pattern
 npx playwright test --grep "login"
+
+# Run specific test
+npx playwright test --grep "TC-001"
 ```
 
 ### View HTML Report
@@ -409,22 +401,21 @@ npx playwright test --grep "login"
 npm run test:report
 ```
 
-### Check Selenium Setup
+### Update Playwright
 ```bash
-chromedriver --version
-geckodriver --version
+npm install -D @playwright/test@latest
+npx playwright install
 ```
 
 ---
 
 ## Summary
 
-✅ **60+ Automated Tests**  
-✅ **2 Testing Frameworks** (Playwright + Selenium)  
-✅ **5 Browser Types** (Chrome, Firefox, Safari, WebKit, IE11*)  
+✅ **50+ Automated Tests**  
+✅ **3 Modern Browsers** (Chromium, Firefox, WebKit)  
 ✅ **100% Critical Path Coverage**  
+✅ **Code Coverage Tracking**  
 ✅ **CI/CD Ready**  
 ✅ **Full Documentation**  
 
 **Ready to run**: `npm test` 🚀
-

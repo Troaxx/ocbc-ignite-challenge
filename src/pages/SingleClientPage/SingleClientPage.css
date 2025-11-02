@@ -1,67 +1,97 @@
 .card-container {
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(16,24,40,0.06);
-  padding: 4rem 2rem 2rem 2rem;
-  display: grid;
-  grid-template-columns: 380px 1fr 280px;
+  background-color: #fff;
+  border-radius: 1.2rem;
+  padding: 2rem;
+  width: 65%;
+  max-width: 900px;
+  min-height: 380px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 2rem;
-  width: 95%;
-  max-width: 100%;
-  margin: 2rem auto;
+
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+
   position: relative;
-  align-items: start;
-  border: 2px solid #e0e0e0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* Hover card subtle animation */
+.card-container:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+/* PRO / INACTIVE badge */
 .pro {
-  background-color: #4CAF50;
+  background-color: #10b981; /* nicer green tone */
   color: white;
-  padding: 0.6rem 1.2rem;
-  border-radius: 999px;
-  font-size: 1.3rem;
-  position: absolute;
-  top: 1.2rem;
-  right: 1.2rem;
+  padding: 6px 14px;
+  border-radius: 0.5rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
-  z-index: 10;
+  text-transform: uppercase;
+
+  position: absolute;
+  top: 1.4rem;
+  left: 1.4rem;
 }
 
+/* Red badge */
 .pro.inactive {
-  background-color: #f44336;
-  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+  background-color: #ef4444;
 }
 
+/* Profile / Client Image */
 .round-image {
-  border-radius: 10px;
-  width: 100%;
-  height: 100%;
-  min-height: 260px;
+  width: 40%;
+  height: auto;         /* prevent stretched image */
+  border-radius: 1.5rem;
   object-fit: cover;
-  box-shadow: 0 6px 18px rgba(16,24,40,0.04);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
+/* Button section */
 .buttons-container {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  align-items: stretch;
-  justify-content: flex-start;
-  margin-top: 2rem;
+  justify-content: center;
+  gap: 1.4rem;
+  width: 50%;
 }
 
-/* Make layout stack on smaller screens */
+.buttons-container button {
+  padding: 0.9rem 1.2rem;
+  border-radius: 0.8rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Button hover */
+.buttons-container button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Responsive — stack layout on small screen */
 @media (max-width: 900px) {
   .card-container {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
-    padding: 1rem;
+    flex-direction: column;
+    width: 90%;
+    padding: 1.8rem;
   }
-  .round-image { min-height: 160px; width: 100%; }
-  .buttons-container { flex-direction: row; justify-content: space-between; }
-}
 
-@media (min-width: 1400px) {
-  .card-container { grid-template-columns: 380px 1fr 260px; }
+  .round-image {
+    width: 100%;
+    height: 240px;
+  }
+
+  .buttons-container {
+    width: 100%;
+  }
 }

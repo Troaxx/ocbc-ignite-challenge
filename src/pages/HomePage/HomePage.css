@@ -13,15 +13,14 @@
   width: 100%;
   max-width: 1400px;
   height: auto;
-  padding: 2rem 0;
-  padding-left: 2rem;
+  padding: 1.5rem 0; /* increased vertical padding to enlarge header area */
 }
 .greet-container h1 {
-  font-size: 4rem;
-  font-weight: 800;
-  color: #EE3124;
-  margin-bottom: 0.8rem;
-  letter-spacing: -1px;
+  font-size: 3rem;              /* Bigger */
+  font-weight: 800;             /* Strong bold */
+  color: #EE3124;               /* Your red brand color */
+  margin-bottom: 0.6rem;
+  letter-spacing: -1px;         /* Tighter typography */
   line-height: 1.05;
 }
 .greet-container h2 {

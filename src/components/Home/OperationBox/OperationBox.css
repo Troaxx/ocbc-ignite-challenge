@@ -1,5 +1,5 @@
 .operation-box {
-  border-radius: 0.75rem;
+  border-radius: 1rem;
   width: 100%;
   height: 100%;
   display: flex;
@@ -7,35 +7,35 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 1.06rem; /* slightly larger base label */
+  font-size: 1.1rem;
   font-weight: 600;
-  gap: 0.6rem;
+  gap: 2rem;
   color: #333333;
   background: white;
   border: 2px solid #e0e0e0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   opacity: 0; 
   animation: fadeIn 2s ease-in-out forwards;
-  transition: transform 0.28s, opacity 0.28s, color 0.28s, background 0.28s, border-color 0.28s;
-  padding: 1.1rem;
+  transition: transform 0.3s, opacity 0.3s, color 0.3s, background 0.3s, border-color 0.3s;
+  padding: 1.2rem;
 }
 
 .operation-box:hover {
-  transform: translateY(-5px);
+  transform: translateY(-8px);
   color: white;
   background: linear-gradient(135deg, #EE3124 0%, #c2271c 100%);
   border-color: #EE3124;
-  box-shadow: 0 8px 24px rgba(238, 49, 36, 0.25);
+  box-shadow: 0 12px 32px rgba(238, 49, 36, 0.3);
 }
 
 .operation-box-icon {
-  font-size: 1.6rem; /* noticeably larger icon on default */
+  font-size: 2rem;
   line-height: 1;
-  transition: transform 0.28s ease;
+  transition: transform 0.3s ease;
 }
 
 .operation-box:hover .operation-box-icon {
-  transform: scale(1.08);
+  transform: scale(1.15);
 }
 
 .operation-box:nth-child(1) { animation-delay: 0.6s; }
@@ -45,13 +45,12 @@
 .operation-box:nth-child(5) { animation-delay: 1.4s; }
 .operation-box:nth-child(6) { animation-delay: 1.6s; }
 
-/* larger sizes on wider screens for better desktop legibility */
 @media (min-width: 900px) {
-  .operation-box { font-size: 1.12rem; padding: 1.25rem; }
-  .operation-box-icon { font-size: 1.9rem; }
+  .operation-box { font-size: 1.15rem; padding: 1.3rem; }
+  .operation-box-icon { font-size: 2.2rem; }
 }
 
 @media (min-width: 1200px) {
-  .operation-box { font-size: 1.18rem; padding: 1.4rem; }
-  .operation-box-icon { font-size: 2.2rem; }
+  .operation-box { font-size: 1.2rem; padding: 1.4rem; }
+  .operation-box-icon { font-size: 2.3rem; }
 }

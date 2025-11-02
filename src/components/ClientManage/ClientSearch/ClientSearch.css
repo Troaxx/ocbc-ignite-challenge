@@ -1,11 +1,11 @@
 .ClientSearch {
   background-color: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  padding: 8px;
-  width: 30%;
+  padding: 12px;
+  width: 50%;
   height: 100%;
   display: flex;
   align-items: center;
@@ -15,17 +15,18 @@
 
 .ClientSearch:focus-within {
   border-color: #EE3124;
-  box-shadow: 0 4px 12px rgba(238, 49, 36, 0.2);
+  box-shadow: 0 6px 16px rgba(238, 49, 36, 0.25);
 }
 
 .ClientSearch #search {
   border: 1px solid #e0e0e0;
-  border-radius: 3px;
+  border-radius: 6px;
   color: #333333;
   float: left;
-  font: 16px Lucida Sans, Trebuchet MS, Tahoma, sans-serif;
+  font-size: 1.2rem;
+  font-family: Lucida Sans, Trebuchet MS, Tahoma, sans-serif;
   height: 60%;
-  padding: 1rem;
+  padding: 1rem 1.2rem;
   width: 70%;
   transition: all 0.3s ease;
 }
@@ -33,7 +34,7 @@
 .ClientSearch #search:focus {
   border-color: #EE3124;
   outline: 0;
-  box-shadow: 0 0 0 2px rgba(238, 49, 36, 0.1);
+  box-shadow: 0 0 0 3px rgba(238, 49, 36, 0.15);
 }
 
 .ClientSearch #search:-moz-placeholder,
@@ -41,36 +42,38 @@
 .ClientSearch #search::-webkit-input-placeholder {
   color: #999;
   font-weight: normal;
+  font-size: 1.1rem;
 }
 
 .ClientSearch #submit {
   background-color: #EE3124;
   border: none;
-  border-radius: 6px;
-  box-shadow: 0 4px 10px rgba(238, 49, 36, 0.18);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(238, 49, 36, 0.2);
   color: white;
   cursor: pointer;
   height: auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font: 14px Arial, Helvetica;
-  padding: 8px 10px; /* smaller, compact button */
+  font-size: 1.2rem;
+  font-family: Arial, Helvetica;
+  padding: 12px 16px;
   text-transform: none;
   font-weight: 600;
-  width: auto; /* let content size the button */
-  transition: background-color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
+  width: auto;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .ClientSearch #submit:hover,
 .ClientSearch #submit:focus {
   background-color: #c2271c;
-  box-shadow: 0 6px 14px rgba(238, 49, 36, 0.22);
-  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(238, 49, 36, 0.3);
+  transform: translateY(-2px);
 }
 
 .ClientSearch #submit:active {
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12) inset;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) inset;
   outline: 0;
   transform: translateY(0);
 }

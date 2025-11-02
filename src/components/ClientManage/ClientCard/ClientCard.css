@@ -1,39 +1,39 @@
 .client-card {
-  border: 1px solid #f0f0f0;
-  border-radius: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 1rem;
   width: 100%;
-  max-width: 420px;
-  padding: 1rem;
+  max-width: 100%;
+  padding: 1.8rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  box-shadow: 0 6px 18px rgba(16,24,40,0.04);
+  gap: 1.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   background-color: white;
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .client-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 16px 40px rgba(16,24,40,0.08);
-  border-color: rgba(238,49,36,0.12);
+  transform: translateY(-8px);
+  box-shadow: 0 8px 24px rgba(238, 49, 36, 0.2);
+  border-color: #EE3124;
 }
 
 .inactive { background-color: #fff6f6; }
 
 .client-info { flex: 1 1 auto; }
-.client-name { font-size: 1.1rem; font-weight: 700; color: #222; margin-bottom: 0.35rem; }
-.client-meta { display: flex; flex-wrap: wrap; gap: 0.6rem; color: #555; font-size: 0.95rem; }
-.client-meta .meta-item { background: #fafafa; padding: 0.18rem 0.45rem; border-radius: 6px; border: 1px solid #f0f0f0; }
+.client-name { font-size: 1.6rem; font-weight: 700; color: #222; margin-bottom: 0.5rem; }
+.client-meta { display: flex; flex-wrap: wrap; gap: 0.8rem; color: #555; font-size: 1.2rem; }
+.client-meta .meta-item { background: #fafafa; padding: 0.3rem 0.7rem; border-radius: 6px; border: 1px solid #e0e0e0; }
 
-.client-actions { display: flex; flex-direction: column; gap: 0.6rem; align-items: flex-end; }
-.client-actions .badge { padding: 0.28rem 0.6rem; border-radius: 999px; font-weight: 600; font-size: 0.9rem; }
-.client-active { background: rgba(76,175,80,0.12); color: #2e7d32; border: 1px solid rgba(76,175,80,0.15); }
-.client-not-active { background: rgba(244,67,54,0.08); color: #b71c1c; border: 1px solid rgba(244,67,54,0.12); }
+.client-actions { display: flex; flex-direction: column; gap: 0.8rem; align-items: flex-end; }
+.client-actions .badge { padding: 0.4rem 0.9rem; border-radius: 999px; font-weight: 600; font-size: 1.1rem; }
+.client-active { background: rgba(76,175,80,0.15); color: #2e7d32; border: 1px solid rgba(76,175,80,0.2); }
+.client-not-active { background: rgba(244,67,54,0.1); color: #b71c1c; border: 1px solid rgba(244,67,54,0.15); }
 
-.manage-button { background-color: #EE3124; box-shadow: 0 8px 20px rgba(238,49,36,0.12); color: white; padding: 0.45rem 0.7rem; border-radius: 8px; border: none; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600; }
-.manage-button svg { width: 1rem; height: 1rem; }
-.manage-button:hover { background-color: #c2271c; box-shadow: 0 12px 28px rgba(238,49,36,0.14); }
+.manage-button { background-color: #EE3124; box-shadow: 0 4px 12px rgba(238,49,36,0.15); color: white; padding: 0.7rem 1.1rem; border-radius: 8px; border: none; display: inline-flex; align-items: center; gap: 0.6rem; font-weight: 600; font-size: 1.1rem; }
+.manage-button svg { width: 1.3rem; height: 1.3rem; }
+.manage-button:hover { background-color: #c2271c; box-shadow: 0 8px 20px rgba(238,49,36,0.25); }
 
 @media (max-width: 680px) {
   .client-card { flex-direction: column; align-items: stretch; }

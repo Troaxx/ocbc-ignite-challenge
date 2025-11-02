@@ -46,31 +46,33 @@
 .ClientSearch #submit {
   background-color: #EE3124;
   border: none;
-  border-radius: 3px;
-  box-shadow: 0 2px 8px rgba(238, 49, 36, 0.3);
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(238, 49, 36, 0.18);
   color: white;
   cursor: pointer;
-  height: 100%;
-  float: right;
-  font: 15px Arial, Helvetica;
-  padding: 0;
-  text-transform: uppercase;
-  font-weight: 500;
-  width: 20%;
-  transition: all 0.3s ease;
+  height: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: 14px Arial, Helvetica;
+  padding: 8px 10px; /* smaller, compact button */
+  text-transform: none;
+  font-weight: 600;
+  width: auto; /* let content size the button */
+  transition: background-color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
 }
 
 .ClientSearch #submit:hover,
 .ClientSearch #submit:focus {
   background-color: #c2271c;
-  box-shadow: 0 4px 12px rgba(238, 49, 36, 0.4);
+  box-shadow: 0 6px 14px rgba(238, 49, 36, 0.22);
+  transform: translateY(-1px);
 }
 
 .ClientSearch #submit:active {
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3) inset;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12) inset;
   outline: 0;
+  transform: translateY(0);
 }
 
-.ClientSearch #submit::-moz-focus-inner {
-  border: 0;
-}
+.ClientSearch #submit::-moz-focus-inner { border: 0; }

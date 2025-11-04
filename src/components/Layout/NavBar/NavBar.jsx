@@ -21,13 +21,6 @@ const NavBar = () => {
     }
   };
 
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-  
   const handleLogOutClick = async () => {
     logout();
   }

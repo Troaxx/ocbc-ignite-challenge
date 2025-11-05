@@ -5,5 +5,6 @@ import TransactionsPage from "./TransactionsPage/TransactionsPage";
 import ClientManagePage from './ClientManagePage/ClientManagePage'
 import SingleClientPage from "./SingleClientPage/SingleClientPage";
 import AddClientPage from "./AddClientPage/AddClientPage";
+import CICDDashboardPage from "./CICDDashboardPage/CICDDashboardPage";
 
-export {HomePage, LoginPage, NotFoundPage, ClientManagePage, TransactionsPage, SingleClientPage, AddClientPage } ;
+export {HomePage, LoginPage, NotFoundPage, ClientManagePage, TransactionsPage, SingleClientPage, AddClientPage, CICDDashboardPage } ;

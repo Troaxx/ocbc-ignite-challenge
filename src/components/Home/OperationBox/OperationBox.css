@@ -7,7 +7,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   font-weight: 600;
   gap: 2rem;
   color: #333333;
@@ -17,7 +17,7 @@
   opacity: 0; 
   animation: fadeIn 2s ease-in-out forwards;
   transition: transform 0.3s, opacity 0.3s, color 0.3s, background 0.3s, border-color 0.3s;
-  padding: 1.2rem;
+  padding: 1.5rem;
 }
 
 .operation-box:hover {
@@ -29,7 +29,7 @@
 }
 
 .operation-box-icon {
-  font-size: 2rem;
+  font-size: 2.8rem;
   line-height: 1;
   transition: transform 0.3s ease;
 }
@@ -46,11 +46,11 @@
 .operation-box:nth-child(6) { animation-delay: 1.6s; }
 
 @media (min-width: 900px) {
-  .operation-box { font-size: 1.15rem; padding: 1.3rem; }
-  .operation-box-icon { font-size: 2.2rem; }
+  .operation-box { font-size: 1.35rem; padding: 1.6rem; }
+  .operation-box-icon { font-size: 3rem; }
 }
 
 @media (min-width: 1200px) {
-  .operation-box { font-size: 1.2rem; padding: 1.4rem; }
-  .operation-box-icon { font-size: 2.3rem; }
+  .operation-box { font-size: 1.4rem; padding: 1.7rem; }
+  .operation-box-icon { font-size: 3.2rem; }
 }

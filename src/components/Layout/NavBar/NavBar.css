@@ -1,18 +1,16 @@
 .nav-bar {
   width: 100%;
-  height: auto;
-  min-height: 80px;
+  height: 50px; /* Explicit height for navigation bar */
   display: flex;
   align-items: center;
   justify-content: center;
-  position: sticky;
-  top: 0;
-  background: white; 
+  position: relative;
+  background: white;
   transition: all 0.3s ease; 
   z-index: 10;
   border-bottom: 1px solid #e0e0e0;
-  padding: 1rem 0;
-} 
+  padding: 0;
+}
 
 .nav-bar.sticky {
   background: white;

@@ -10,7 +10,7 @@ const HomePage = () => {
 
     <div className="HomePage">
       <div className="greet-container">
-        <h1>Welcome Back Admin !</h1>
+        <h1 className="welcome-title">Welcome Back Admin !</h1>
         <h2>It's good to have you back...</h2>
         <h3>What is the plan for today?</h3>
       </div>

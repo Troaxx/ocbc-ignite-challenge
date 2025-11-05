@@ -21,6 +21,7 @@
     "coverage:view": "open coverage/index.html"
   },
   "dependencies": {
+    "body-parser": "^2.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^5.2.1",
@@ -41,5 +42,21 @@
     "eslint-plugin-react-refresh": "^0.4.6",
     "vite": "^5.2.0",
     "vite-plugin-istanbul": "^7.2.0"
-  }
+  },
+  "description": "<img src=\"/public/assets/images/dy-bank-high-resolution-logo-black-transparent.png\" alt=\"App Icon\" width=\"160\" height=\"100\">",
+  "main": "playwright.config.js",
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Troaxx/ocbc-ignite-challenge.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Troaxx/ocbc-ignite-challenge/issues"
+  },
+  "homepage": "https://github.com/Troaxx/ocbc-ignite-challenge#readme"
 }

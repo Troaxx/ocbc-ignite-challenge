@@ -14,6 +14,7 @@ const AddClientForm = ({ formData, handleChange, handleSubmit, loading, error })
           value={formData.id}
           onChange={handleChange}
           name="id"
+          placeholder="e.g. 12345"
         />
         <FormInput
           label="Name"
@@ -21,6 +22,7 @@ const AddClientForm = ({ formData, handleChange, handleSubmit, loading, error })
           value={formData.name}
           onChange={handleChange}
           name="name"
+          placeholder="Full name"
         />
         <FormInput
           label="Age"
@@ -28,6 +30,7 @@ const AddClientForm = ({ formData, handleChange, handleSubmit, loading, error })
           value={formData.age}
           onChange={handleChange}
           name="age"
+          placeholder="e.g. 32"
         />
         <FormInput
           label="City"
@@ -35,6 +38,7 @@ const AddClientForm = ({ formData, handleChange, handleSubmit, loading, error })
           value={formData.city}
           onChange={handleChange}
           name="city"
+          placeholder="City or area"
         />
         <FormInput
           label="Phone"
@@ -42,6 +46,7 @@ const AddClientForm = ({ formData, handleChange, handleSubmit, loading, error })
           value={formData.phone}
           onChange={handleChange}
           name="phone"
+          placeholder="+65 9999 9999"
         />
         <FormInput
           label="Cash"
@@ -49,6 +54,7 @@ const AddClientForm = ({ formData, handleChange, handleSubmit, loading, error })
           value={formData.cash}
           onChange={handleChange}
           name="cash"
+          placeholder="0.00"
         />
         <FormInput
           label="Credit"
@@ -56,6 +62,7 @@ const AddClientForm = ({ formData, handleChange, handleSubmit, loading, error })
           value={formData.credit}
           onChange={handleChange}
           name="credit"
+          placeholder="100"
         />
       </div>
       {loading ? (<Loader />) : (

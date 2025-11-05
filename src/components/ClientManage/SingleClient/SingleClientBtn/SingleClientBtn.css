@@ -1,26 +1,43 @@
 .client-button {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  border: none;
+  gap: 0.8rem;
+  border: 2px solid #e0e0e0;
   cursor: pointer;
   background-color: white;
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 1.2rem;
   transition: all 0.3s ease;
-  border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 1rem 1.5rem;
+  color: #333;
 }
 
 .client-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(238, 49, 36, 0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(238, 49, 36, 0.15);
+  border-color: #EE3124;
 }
 
 .remove-color {
   color: #f44336;
+  border-color: #f44336;
+}
+
+.remove-color:hover {
+  background-color: #f443361a;
 }
 
 .client-button span {
-  font-size: 6rem;
+  font-size: 1.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* make buttons full width when stacked on smaller screens */
+@media (max-width: 900px) {
+  .client-button { flex: 1; justify-content: center; }
 }

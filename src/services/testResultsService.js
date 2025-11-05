@@ -35,9 +35,17 @@ const testResultsService = {
             totalTests++;
             totalDuration += result.duration || 0;
             
-            if (result.status === 'passed') passedTests++;
-            else if (result.status === 'failed') failedTests++;
-            else if (result.status === 'skipped') skippedTests++;
+            const testIsFailed = test.status === 'unexpected' || test.status === 'timedOut';
+            const resultIsFailed = result.status === 'failed' || result.status === 'timedOut';
+            const isFailed = testIsFailed || resultIsFailed;
+            
+            if (isFailed) {
+              failedTests++;
+            } else if (result.status === 'passed') {
+              passedTests++;
+            } else if (result.status === 'skipped') {
+              skippedTests++;
+            }
 
             const startTime = new Date(result.startTime);
             const endTime = new Date(startTime.getTime() + (result.duration || 0));
@@ -51,7 +59,7 @@ const testResultsService = {
 
             testDetails.push({
               title: spec.title,
-              status: result.status,
+              status: isFailed ? 'failed' : result.status,
               duration: result.duration,
               startTime: result.startTime,
               projectName: test.projectName || 'unknown'
@@ -72,7 +80,10 @@ const testResultsService = {
       });
     }
 
+    const runTimestamp = earliestStartTime ? earliestStartTime.getTime() : new Date().getTime();
+    
     return {
+      id: runTimestamp,
       timestamp: earliestStartTime ? earliestStartTime.toISOString() : new Date().toISOString(),
       totalTests,
       passedTests,
@@ -90,15 +101,16 @@ const testResultsService = {
   },
 
   archiveCurrentResults(results) {
-    if (!results) return;
+    if (!results || !results.id) return;
 
     const history = this.getHistory();
-    const newEntry = {
-      id: Date.now(),
-      ...results
-    };
-
-    history.unshift(newEntry);
+    
+    const existingIndex = history.findIndex(run => run.id === results.id);
+    if (existingIndex !== -1) {
+      history.splice(existingIndex, 1);
+    }
+    
+    history.unshift(results);
     
     while (history.length > 5) {
       history.pop();

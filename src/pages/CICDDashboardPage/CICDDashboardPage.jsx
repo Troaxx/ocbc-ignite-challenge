@@ -59,9 +59,17 @@ const CICDDashboardPage = () => {
         <div className="history-section">
           <h2>Past Test Runs (Last {results.history.length})</h2>
           <div className="history-grid">
-            {results.history.map((testRun) => (
-              <TestRunCard key={testRun.id} testRun={testRun} isCurrent={false} />
-            ))}
+            {results.history.map((testRun, index) => {
+              const runNumber = index + 1;
+              return (
+                <TestRunCard 
+                  key={testRun.id} 
+                  testRun={testRun} 
+                  isCurrent={false} 
+                  runNumber={runNumber}
+                />
+              );
+            })}
           </div>
         </div>
       )}
@@ -75,7 +83,7 @@ const CICDDashboardPage = () => {
   );
 };
 
-const TestRunCard = ({ testRun, isCurrent }) => {
+const TestRunCard = ({ testRun, isCurrent, runNumber }) => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'passed': return '#4CAF50';
@@ -93,10 +101,16 @@ const TestRunCard = ({ testRun, isCurrent }) => {
   const passRate = getPassRate(testRun);
   const isHealthy = passRate >= 80;
 
+  const getRunTitle = () => {
+    if (isCurrent) return 'Current Run';
+    if (runNumber) return `Run ${runNumber}`;
+    return 'Unknown Run';
+  };
+
   return (
     <div className={`test-run-card ${isCurrent ? 'current' : ''}`}>
       <div className="card-header">
-        <h3>{isCurrent ? 'Current Run' : `Run ${testRun.id ? new Date(testRun.id).toLocaleDateString() : 'Unknown'}`}</h3>
+        <h3>{getRunTitle()}</h3>
         <span className={`status-badge ${isHealthy ? 'healthy' : 'unhealthy'}`}>
           {passRate}% Pass Rate
         </span>

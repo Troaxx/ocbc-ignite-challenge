@@ -3,7 +3,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AuthProvider } from './context/AuthContext.jsx'
 import { FetchClientsProvider } from "./context/FetchClientsContext.jsx";
 
-import { AddClientPage, ClientManagePage, HomePage, LoginPage, NotFoundPage, SingleClientPage, TransactionsPage } from "./pages";
+import { AddClientPage, ClientManagePage, HomePage, LoginPage, NotFoundPage, SingleClientPage, TransactionsPage, CICDDashboardPage } from "./pages";
 import { Layout, ProtectedRoute } from "./components";
 
 function App() {
@@ -35,6 +35,10 @@ function App() {
         {
           path: 'addClient',
           element: <AddClientPage />,
+        },
+        {
+          path: 'cicd-dashboard',
+          element: <CICDDashboardPage />,
         },
 
       ]

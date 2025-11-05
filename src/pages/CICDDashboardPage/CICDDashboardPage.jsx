@@ -15,7 +15,7 @@ const CICDDashboardPage = () => {
   const loadResults = async () => {
     try {
       setLoading(true);
-      const data = await testResultsService.getLatestResults();
+      const data = await testResultsService.getAllResults();
       setResults(data);
       setError(null);
     } catch (err) {
@@ -57,7 +57,7 @@ const CICDDashboardPage = () => {
 
       {results?.history && results.history.length > 0 && (
         <div className="history-section">
-          <h2>Past Test Runs (Last 5)</h2>
+          <h2>Past Test Runs (Last {results.history.length})</h2>
           <div className="history-grid">
             {results.history.map((testRun) => (
               <TestRunCard key={testRun.id} testRun={testRun} isCurrent={false} />

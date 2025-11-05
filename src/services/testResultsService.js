@@ -125,6 +125,29 @@ const testResultsService = {
     };
   },
 
+  async getAllResults() {
+    const current = await this.getCurrentResults();
+    if (current) {
+      this.archiveCurrentResults(current);
+    }
+    const history = this.getHistory();
+    
+    const allResults = [];
+    if (current) {
+      allResults.push({ ...current, isCurrent: true });
+    }
+    
+    history.slice(0, 5).forEach(run => {
+      allResults.push({ ...run, isCurrent: false });
+    });
+    
+    return {
+      current: current || null,
+      history: history.slice(0, 5),
+      all: allResults
+    };
+  },
+
   formatDuration(ms) {
     if (ms < 1000) return `${ms}ms`;
     if (ms < 60000) return `${(ms / 1000).toFixed(2)}s`;

@@ -26,7 +26,6 @@ test.describe('Transaction Tests', () => {
         await page.fill('input[placeholder*="Search"]', '1');
         await page.waitForTimeout(500);
         await page.waitForSelector('.ClientActionCard');
-
         // Step 2: Open transfer modal
         await page.click('button:has-text("Transfer")');
         // Step 3: Select recipient (index 1 in dropdown MEANS second client in the list)
@@ -45,7 +44,6 @@ test.describe('Transaction Tests', () => {
         // Step 1: Search for sender client
         await page.fill('input[placeholder*="Search"]', '1');
         await page.waitForSelector('.ClientActionCard');
-
         // Step 2: Open transfer modal
         await page.click('button:has-text("Transfer")');
         // Step 3: Select recipient
@@ -65,7 +63,6 @@ test.describe('Transaction Tests', () => {
         // Step 1: Search for sender client
         await page.fill('input[placeholder*="Search"]', '1');
         await page.waitForSelector('.ClientActionCard');
-
         // Step 2: Open transfer modal
         await page.click('button:has-text("Transfer")');
         // Step 3: Do NOT select a recipient (leave dropdown at default "Select a client")
@@ -78,5 +75,16 @@ test.describe('Transaction Tests', () => {
         await expect(page.locator('.modal-overlay')).toBeVisible();
         await expect(page.locator('text=Please select a client to transfer to.')).toBeVisible();
     });
+
+    test('Update client credit successfully', async ({ page }) => {
+        await page.fill('input[placeholder*="Search"]', '1');
+        await page.waitForSelector('.ClientActionCard');
+        await page.click('button:has-text("Change Credit")');
+        await page.fill('input[type="number"]', '3000'); // new credit limit
+        await page.locator('.modal-content button[type="submit"]').click();
+        // Modal should close after success
+        await expect(page.locator('.modal-overlay')).not.toBeVisible();
+    });
+
 
 });

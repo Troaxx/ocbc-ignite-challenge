@@ -14,6 +14,7 @@ const ClientActionModal = ({
   currentLabel,
   inputLabel,
   buttonLabel, 
+  actionError
 }) => {
   const [newValue, setNewValue] = useState(actionType === "credit" ? client.credit : 0);
   const [targetClientId, setTargetClientId] = useState(""); 
@@ -54,6 +55,14 @@ const ClientActionModal = ({
         return `$${cash + credit}`;
     }
   };
+  
+    // Auto-dismiss localError after 5 seconds
+  React.useEffect(() => {
+    if (localError) {
+      const timer = setTimeout(() => setLocalError(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [localError]);
 
   return (
     <div className="modal-overlay">
@@ -80,6 +89,7 @@ const ClientActionModal = ({
           ) : (
             <p>{currentLabel}: {getCurrentValue()}</p>
           )}
+          {actionError && <ErrorComponent errorMessage={actionError} />}
           <form onSubmit={handleSubmit}>
             {actionType === "transfer" && (
               <>

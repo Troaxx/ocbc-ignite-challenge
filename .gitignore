@@ -33,3 +33,6 @@ dist-ssr
 .nyc_output
 coverage
 *.lcov
+
+# Playwright
+/playwright/.auth/

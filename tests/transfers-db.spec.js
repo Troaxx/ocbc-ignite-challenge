@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { resetDatabase, loginAsAdmin, getDatabaseState, performTransfer, searchClientById } from './helpers/test-helpers.js';
+import { getDatabaseState, performTransfer, searchClientById } from './helpers/test-helpers.js';
 
 test.describe('Transaction Tests', () => {
     test.beforeEach(async ({ page }) => {

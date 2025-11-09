@@ -1,6 +1,5 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { loginAsAdmin, resetDatabase } from './helpers/test-helpers';
 
 test.describe('Transaction Tests', () => {
     test.beforeEach(async ({ page }) => {
@@ -21,15 +20,6 @@ test.describe('Transaction Tests', () => {
         await expect(page).toHaveURL('/');
         await page.goto('/transactions');
     });
-    // test.beforeEach(async ({ page }) => {
-    //         // First navigate to the app
-    //         await page.goto('/');
-    //         // Then reset database and login via helpers
-    //         await resetDatabase(page);
-    //         await loginAsAdmin(page);
-    //         await page.goto('/transactions');
-    //     });
-
     test('Perform transfer transaction', async ({ page }) => {
         // Search for sender client
         await page.fill('input[placeholder*="Search"]', '1');

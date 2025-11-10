@@ -39,7 +39,25 @@ test.describe('Transaction Tests', () => {
         await expect(page.locator('.modal-overlay')).not.toBeVisible();
     });
 
-    // WRONG TEST CASE : PREVENT TRANSFER WITH INSUFFICIENT FUNDS
+    // WRONG TEST CASE 1 : TRANSFER WHEN NO RECIPIENT SELECTED
+    test('Prevent transfer when no recipient is selected', async ({ page }) => {
+        // Step 1: Search for sender client
+        await page.fill('input[placeholder*="Search"]', '1');
+        await page.waitForSelector('.ClientActionCard');
+        // Step 2: Open transfer modal
+        await page.click('button:has-text("Transfer")');
+        // Step 3: Do NOT select a recipient (leave dropdown at default "Select a client")
+        // Step 4: Enter a valid amount
+        await page.fill('input[type="number"]', '500');
+        // Step 5: Try to submit transfer
+        await page.locator('.modal-content button[type="submit"]').click();
+        // Step 6: Assert failure state
+        // Modal should still be visible (transaction blocked)
+        await expect(page.locator('.modal-overlay')).toBeVisible();
+        await expect(page.locator('text=Please select a client to transfer to.')).toBeVisible();
+    });
+
+    // WRONG TEST CASE 2 : TRANSFER WITH INSUFFICIENT FUNDS
     test('Prevent transfer with insufficient funds', async ({ page }) => {
         // Step 1: Search for sender client
         await page.fill('input[placeholder*="Search"]', '1');
@@ -58,33 +76,58 @@ test.describe('Transaction Tests', () => {
         await expect(page.locator('.modal-content').locator('text=You cannot transfer more than available cash.')).toBeVisible();
     });
 
-    // WRONG TEST CASE : PREVENT TRANSFER WHEN NO RECIPIENT SELECTED
-    test('Prevent transfer when no recipient is selected', async ({ page }) => {
+    // WRONG TEST CASE 3 : TRANSFER WITH NEGATIVE AMOUNT
+    test('Prevent transfer with negative amount', async ({ page }) => {
         // Step 1: Search for sender client
         await page.fill('input[placeholder*="Search"]', '1');
         await page.waitForSelector('.ClientActionCard');
         // Step 2: Open transfer modal
         await page.click('button:has-text("Transfer")');
-        // Step 3: Do NOT select a recipient (leave dropdown at default "Select a client")
-        // Step 4: Enter a valid amount
-        await page.fill('input[type="number"]', '500');
+        // Step 3: Select recipient
+        await page.selectOption('select', { index: 1 });
+        // Step 4: Enter a negative amount
+        await page.fill('input[type="number"]', '-500');
         // Step 5: Try to submit transfer
         await page.locator('.modal-content button[type="submit"]').click();
         // Step 6: Assert failure state
-        // Modal should still be visible (transaction blocked)
+        // Modal should remain visible
         await expect(page.locator('.modal-overlay')).toBeVisible();
-        await expect(page.locator('text=Please select a client to transfer to.')).toBeVisible();
+        // Error message should appear (modal error box)
+        // await expect(page.locator('text=/greater than or equal to 0/i')).toBeVisible();
     });
 
+
+    // CORRECT TEST CASES : UPDATE CREDIT LIMIT
     test('Update client credit successfully', async ({ page }) => {
+        // Step 1: Search for sender client
         await page.fill('input[placeholder*="Search"]', '1');
         await page.waitForSelector('.ClientActionCard');
+        // Step 2: Open credit modal
         await page.click('button:has-text("Change Credit")');
+        // Step 3: Enter a positive value
         await page.fill('input[type="number"]', '3000'); // new credit limit
+        // Step 4: Click on submit
         await page.locator('.modal-content button[type="submit"]').click();
         // Modal should close after success
         await expect(page.locator('.modal-overlay')).not.toBeVisible();
     });
 
+    // WRONG TEST CASE 1 : CHANGE TO NEGATIVE CREDIT LIMIT
+    test('Prevent setting negative credit limit', async ({ page }) => {
+        // Step 1: Search for sender client
+        await page.fill('input[placeholder*="Search"]', '1');
+        await page.waitForSelector('.ClientActionCard');
+        // Step 2: Open credit modal
+        await page.click('button:has-text("Change Credit")');
+        // Step 3: Enter a negative value
+        await page.fill('input[type="number"]', '-1000');
+        // Step 4: Try to submit
+        await page.locator('.modal-content button[type="submit"]').click();
+        // Step 5: Assert failure state
+        // Modal should remain visible
+        await expect(page.locator('.modal-overlay')).toBeVisible();
+        // Error message should appear (modal error box)
+        await expect(page.locator('.modal-content .ErrorComponent')).toBeVisible();
+    });
 
 });

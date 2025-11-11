@@ -213,7 +213,7 @@ The app logs all database operations. Check test output for:
 2. Add API mocking for network failures
 3. Add performance benchmarks
 4. Add accessibility tests
-5. Add cross-browser compatibility tests for older browsers (Selenium)
+5. Add mobile device testing with real devices
 
 ## Test Metrics
 

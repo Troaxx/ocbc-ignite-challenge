@@ -3,18 +3,20 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Client Management Tests', () => {
   
+  //Login before each test
   test.beforeEach(async ({ page }) => {
     await page.goto('/login');
     await page.evaluate(() => {
       localStorage.clear();
     });
     
-    await page.fill('input[type="email"]', 'admin@test.com');
-    await page.fill('input[type="password"]', 'password');
+    await page.fill('input[type="email"]', 'eladtester@test.test');
+    await page.fill('input[type="password"]', 'elad12345678');
     await page.click('button[type="submit"]');
     await expect(page).toHaveURL('/');
   });
 
+  //Display all clients
   test('Client Manage page displays clients', async ({ page }) => {
     await page.goto('/clientManage');
     await page.waitForSelector('.client-card', { timeout: 5000 });
@@ -23,6 +25,7 @@ test.describe('Client Management Tests', () => {
     expect(await clientCards.count()).toBeGreaterThan(0);
   });
 
+  //Display searched client information
   test('Search client by ID', async ({ page }) => {
     await page.goto('/clientManage');
     await page.waitForSelector('.client-card');
@@ -34,6 +37,7 @@ test.describe('Client Management Tests', () => {
     expect(await clientCards.count()).toBeGreaterThanOrEqual(1);
   });
 
+  //Add client information
   test('Add new client', async ({ page }) => {
     await page.goto('/addClient');
     
@@ -53,6 +57,7 @@ test.describe('Client Management Tests', () => {
     await expect(page).toHaveURL('/clientManage');
   });
 
+  //Display single client information
   test('Navigate to single client page', async ({ page }) => {
     await page.goto('/clientManage');
     await page.waitForSelector('.manage-button');
@@ -62,17 +67,42 @@ test.describe('Client Management Tests', () => {
     await expect(page.url()).toMatch(/\/singlePage\/\d+/);
   });
 
+  //Edit client information
   test('Edit client information', async ({ page }) => {
     await page.goto('/clientManage');
     await page.waitForSelector('.manage-button');
     
     await page.locator('.manage-button').first().click();
     
+    // ensure we landed on the single client page
+    await expect(page).toHaveURL(/\/singlePage\/\d+/);
+
+    // enter edit mode and update fields
     await page.click('button:has-text("Edit")');
-    await page.fill('input[name="name"]', 'Updated Name');
+    await page.fill('input[name="name"]', 'Updated Client');
+    await page.fill('input[name="city"]', 'Updated City');
     await page.click('button:has-text("Save")');
-    
-    await page.waitForTimeout(1000);
-    await expect(page.locator('text=Updated Name')).toBeVisible();
+
+    // wait for the details area to update and assert the new values are visible
+    await page.waitForSelector('.client-details-container');
+    // Verify the updated values are present in the details (check text content)
+    await expect(page.locator('.client-details-container .value').first()).toHaveText('Updated Client', { timeout: 5000 });
+    // Address/City is the 4th value in the details list (0-based index)
+    await expect(page.locator('.client-details-container .value').nth(3)).toHaveText('Updated City', { timeout: 5000 });
+  });
+
+  //Delete client information
+  test('Delete client', async ({ page }) => {
+    await page.goto('/clientManage');
+    await page.waitForSelector('.manage-button');
+
+    await page.locator('.manage-button').first().click();
+
+    // ensure we landed on the single client page
+    await expect(page).toHaveURL(/\/singlePage\/\d+/);
+
+    await page.click('button:has-text("Remove Client")');
+
+    await expect(page).toHaveURL('/clientManage');
   });
 });

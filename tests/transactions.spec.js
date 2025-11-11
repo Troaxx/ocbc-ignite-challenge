@@ -7,9 +7,6 @@ test.describe('Transaction Tests', () => {
     await page.goto('/login');
     await page.evaluate(() => {
       localStorage.clear();
-      if (window.dataService) {
-        window.dataService.resetDatabase();
-      }
     });
     
     await page.fill('input[type="email"]', 'admin@test.com');
@@ -29,30 +26,62 @@ test.describe('Transaction Tests', () => {
   });
 
   test('Perform deposit transaction', async ({ page }) => {
-    await page.fill('input[placeholder*="Search"]', '1');
-    await page.waitForTimeout(500);
-    await page.waitForSelector('.ClientActionCard');
-    
-    await page.click('button:has-text("Deposit")');
-    await page.fill('input[type="number"]', '1000');
-    await page.locator('.modal-content button[type="submit"]').click();
-    
-    await page.waitForTimeout(1000);
-    await expect(page.locator('.modal-overlay')).not.toBeVisible();
-  });
+  // Search for client
+  await page.fill('input[placeholder*="Search"]', '1');
+  await page.waitForSelector('.ClientActionCard');
 
-  test('Perform withdrawal transaction', async ({ page }) => {
-    await page.fill('input[placeholder*="Search"]', '1');
-    await page.waitForTimeout(500);
-    await page.waitForSelector('.ClientActionCard');
-    
-    await page.click('button:has-text("Withdraw")');
-    await page.fill('input[type="number"]', '500');
-    await page.locator('.modal-content button[type="submit"]').click();
-    
-    await page.waitForTimeout(1000);
-    await expect(page.locator('.modal-overlay')).not.toBeVisible();
-  });
+  // --- STEP 1: Capture current cash value ---
+  const cashLocator = page.locator('.ClientActionCard .client-detail', { hasText: 'Cash:' });
+  const beforeCashText = await cashLocator.innerText();   // e.g. "Cash: 5808"
+  const beforeCash = parseInt(beforeCashText.replace(/\D+/g, ''));  // extract number only
+
+  // Click deposit button
+  await page.click('button:has-text("Deposit")');
+
+  // Enter deposit amount
+  const depositAmount = 1000;
+  await page.fill('input[type="number"]', depositAmount.toString());
+  await page.locator('.modal-content button[type="submit"]').click();
+
+  await page.waitForTimeout(1000);
+  await expect(page.locator('.modal-overlay')).not.toBeVisible();
+
+  // --- STEP 2: Capture new cash value ---
+  const afterCashText = await cashLocator.innerText();
+  const afterCash = parseInt(afterCashText.replace(/\D+/g, ''));
+
+  // Assert that the value increased correctly
+  expect(afterCash).toBe(beforeCash + depositAmount);
+});
+
+
+ test('Perform withdrawal transaction', async ({ page }) => {
+  await page.fill('input[placeholder*="Search"]', '1');
+  await page.waitForSelector('.ClientActionCard');
+
+  // --- STEP 1: Get current cash value before withdrawal ---
+  const cashLocator = page.locator('.ClientActionCard .client-detail', { hasText: 'Cash:' });
+  const beforeCashText = await cashLocator.innerText();     // e.g. "Cash: 5808"
+  const beforeCash = parseInt(beforeCashText.replace(/\D+/g, ''));  // extract digits only
+
+  // Open withdraw modal
+  await page.click('button:has-text("Withdraw")');
+
+  // Enter withdrawal amount
+  const withdrawAmount = 500;
+  await page.fill('input[type="number"]', withdrawAmount.toString());
+  await page.locator('.modal-content button[type="submit"]').click();
+
+  // Wait for modal to close
+  await expect(page.locator('.modal-overlay')).not.toBeVisible();
+
+  // --- STEP 2: Get updated cash value after withdrawal ---
+  const afterCashText = await cashLocator.innerText();
+  const afterCash = parseInt(afterCashText.replace(/\D+/g, ''));
+
+  // Assertion: afterCash should be beforeCash - withdrawAmount
+  expect(afterCash).toBe(beforeCash - withdrawAmount);
+});
 
   test('Perform transfer transaction', async ({ page }) => {
     await page.fill('input[placeholder*="Search"]', '1');

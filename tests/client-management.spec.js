@@ -161,6 +161,7 @@ test.describe('Client Management Tests', () => {
     await page.locator('.manage-button').first().click();
     
     const originalName = await page.locator('h3').first().textContent();
+    expect(originalName).not.toBeNull();
     
     await page.click('button:has-text("Edit")');
     
@@ -168,7 +169,7 @@ test.describe('Client Management Tests', () => {
     
     await page.click('button:has-text("Cancel")');
     
-    await expect(page.locator('h3').first()).toHaveText(originalName);
+    await expect(page.locator('h3').first()).toHaveText(originalName ?? '');
   });
 
   test('TC-023: Delete client and verify removal', async ({ page }) => {

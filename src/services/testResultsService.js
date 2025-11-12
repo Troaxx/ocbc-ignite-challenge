@@ -31,7 +31,7 @@ const testResultsService = {
       }
       if (spec.tests && spec.tests.length > 0) {
         spec.tests.forEach(test => {
-          test.results?.forEach(result => {
+          test.results?.forEach((result, resultIndex) => {
             totalTests++;
             totalDuration += result.duration || 0;
             
@@ -57,12 +57,24 @@ const testResultsService = {
               latestEndTime = endTime;
             }
 
+            const errorDetails = this.extractErrorDetails(result, test);
+            const attachments = this.extractAttachments(result, test);
+
             testDetails.push({
               title: spec.title,
               status: isFailed ? 'failed' : result.status,
               duration: result.duration,
               startTime: result.startTime,
-              projectName: test.projectName || 'unknown'
+              projectName: test.projectName || 'unknown',
+              file: spec.file || test.location?.file || 'unknown',
+              line: spec.line || test.location?.line || null,
+              column: spec.column || test.location?.column || null,
+              error: errorDetails,
+              attachments: attachments,
+              retry: result.retry || 0,
+              workerIndex: result.workerIndex || null,
+              stdout: result.stdout || [],
+              stderr: result.stderr || []
             });
           });
         });
@@ -106,11 +118,13 @@ const testResultsService = {
     const history = this.getHistory();
     
     const existingIndex = history.findIndex(run => run.id === results.id);
-    if (existingIndex !== -1) {
-      history.splice(existingIndex, 1);
-    }
     
-    history.unshift(results);
+    if (existingIndex === -1) {
+      history.unshift(results);
+    } else {
+      history.splice(existingIndex, 1);
+      history.unshift(results);
+    }
     
     while (history.length > 5) {
       history.pop();
@@ -120,43 +134,55 @@ const testResultsService = {
   },
 
   getHistory() {
-    const stored = localStorage.getItem(TEST_RESULTS_STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
+    try {
+      const stored = localStorage.getItem(TEST_RESULTS_STORAGE_KEY);
+      if (!stored) return [];
+      const history = JSON.parse(stored);
+      return Array.isArray(history) ? history.slice(0, 5) : [];
+    } catch (error) {
+      console.error('Error reading test results history from localStorage:', error);
+      return [];
+    }
   },
 
   async getLatestResults() {
-    const current = await this.getCurrentResults();
-    if (current) {
-      this.archiveCurrentResults(current);
-    }
     const history = this.getHistory();
+    const current = await this.getCurrentResults();
+    
+    if (current) {
+      const existingRun = history.find(run => run.id === current.id);
+      if (!existingRun) {
+        this.archiveCurrentResults(current);
+        return {
+          current: current,
+          history: this.getHistory()
+        };
+      }
+    }
     
     return {
       current: current || null,
-      history: history.slice(0, 5)
+      history: history
     };
   },
 
   async getAllResults() {
+    let history = this.getHistory();
     const current = await this.getCurrentResults();
-    if (current) {
-      this.archiveCurrentResults(current);
-    }
-    const history = this.getHistory();
     
-    const allResults = [];
     if (current) {
-      allResults.push({ ...current, isCurrent: true });
+      const mostRecentInHistory = history.length > 0 ? history[0] : null;
+      
+      if (!mostRecentInHistory || mostRecentInHistory.id !== current.id) {
+        this.archiveCurrentResults(current);
+        history = this.getHistory();
+      }
     }
-    
-    history.slice(0, 5).forEach(run => {
-      allResults.push({ ...run, isCurrent: false });
-    });
     
     return {
-      current: current || null,
+      current: history.length > 0 ? history[0] : null,
       history: history.slice(0, 5),
-      all: allResults
+      all: history.slice(0, 5)
     };
   },
 
@@ -172,6 +198,119 @@ const testResultsService = {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
     return date.toLocaleString();
+  },
+
+  extractErrorDetails(result, test) {
+    if (!result.error && !test.error) return null;
+
+    const error = result.error || test.error;
+    return {
+      message: error.message || 'Test failed',
+      stack: error.stack || null,
+      value: error.value || null,
+      snippet: error.snippet || null,
+      location: error.location ? {
+        file: error.location.file,
+        line: error.location.line,
+        column: error.location.column
+      } : null
+    };
+  },
+
+  extractAttachments(result, test) {
+    const attachments = [];
+    
+    if (result.attachments) {
+      result.attachments.forEach(attachment => {
+        attachments.push({
+          name: attachment.name,
+          contentType: attachment.contentType,
+          path: attachment.path,
+          body: attachment.body,
+          type: this.getAttachmentType(attachment.name, attachment.contentType)
+        });
+      });
+    }
+
+    if (test.attachments) {
+      test.attachments.forEach(attachment => {
+        attachments.push({
+          name: attachment.name,
+          contentType: attachment.contentType,
+          path: attachment.path,
+          body: attachment.body,
+          type: this.getAttachmentType(attachment.name, attachment.contentType)
+        });
+      });
+    }
+
+    return attachments;
+  },
+
+  getAttachmentType(name, contentType) {
+    if (!name && !contentType) return 'unknown';
+    
+    const nameLower = (name || '').toLowerCase();
+    const contentTypeLower = (contentType || '').toLowerCase();
+
+    if (nameLower.includes('screenshot') || contentTypeLower.includes('image')) {
+      return 'screenshot';
+    }
+    if (nameLower.includes('trace') || contentTypeLower.includes('application')) {
+      return 'trace';
+    }
+    if (nameLower.includes('video') || contentTypeLower.includes('video')) {
+      return 'video';
+    }
+    if (nameLower.includes('har') || contentTypeLower.includes('har')) {
+      return 'har';
+    }
+    return 'other';
+  },
+
+  formatErrorMessage(error) {
+    if (!error) return null;
+    
+    if (error.message) {
+      return this.stripAnsiCodes(error.message);
+    }
+    return 'Test failed without error message';
+  },
+
+  stripAnsiCodes(text) {
+    if (!text) return text;
+    return String(text)
+      .replace(/\x1b\[[0-9;]*m/g, '')
+      .replace(/\x1b\[[0-9;]*[A-Za-z]/g, '')
+      .replace(/\x1b\[2m/g, '')
+      .replace(/\x1b\[22m/g, '')
+      .replace(/\x1b\[31m/g, '')
+      .replace(/\x1b\[39m/g, '')
+      .replace(/\x1b\[36m/g, '')
+      .replace(/\x1b\[33m/g, '')
+      .replace(/\x1b\[35m/g, '')
+      .replace(/\x1b\[32m/g, '')
+      .replace(/\x1b\[90m/g, '')
+      .replace(/\x1b\[0m/g, '')
+      .replace(/\x1b\[1m/g, '')
+      .replace(/\\x1b\[[0-9;]*m/g, '')
+      .replace(/\\x1b\[[0-9;]*[A-Za-z]/g, '')
+      .replace(/\^\x1b\[22m/g, '^')
+      .replace(/\x1b\[22m\^/g, '^')
+      .trim();
+  },
+
+  formatStackTrace(stack) {
+    if (!stack) return null;
+    
+    const lines = stack.split('\n');
+    return lines.slice(0, 10).join('\n');
+  },
+
+  getFileName(filePath) {
+    if (!filePath) return 'Unknown';
+    const parts = filePath.split(/[/\\]/);
+    return parts[parts.length - 1];
   }
 };
 

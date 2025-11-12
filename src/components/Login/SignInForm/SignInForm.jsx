@@ -51,13 +51,11 @@ const SignInForm = () => {
 
     // 3️⃣ Call AuthContext login only if credentials are valid
     try {
-      const admin = await login(email, password);
-      if (admin) {
-        navigate("/"); // success → dashboard
-      }
+      await login(email, password);
+      // Navigate after login - localStorage is already set, ProtectedRoute will check it
+      navigate("/", { replace: true }); // success → dashboard
     } catch (err) {
       console.log(err);
-    } finally {
       setIsLoading(false);
     }
   };

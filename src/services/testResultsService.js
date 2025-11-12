@@ -8,7 +8,16 @@ const testResultsService = {
         throw new Error('Failed to fetch test results');
       }
       const data = await response.json();
-      return this.parseTestResults(data);
+      const testResults = this.parseTestResults(data);
+      
+      // Dynamically import coverage service to avoid circular dependencies
+      const coverageServiceModule = await import('./coverageService.js');
+      const coverageData = await coverageServiceModule.default.getCoverageData();
+      if (coverageData) {
+        testResults.coverage = coverageData;
+      }
+      
+      return testResults;
     } catch (error) {
       console.error('Error fetching test results:', error);
       return null;
@@ -23,32 +32,49 @@ const testResultsService = {
     let totalDuration = 0;
     let earliestStartTime = null;
     let latestEndTime = null;
-    const testDetails = [];
+    const failedTestsList = [];
 
-    const processSpec = (spec) => {
+    const processSpec = (spec, suiteTitle = '') => {
       if (spec.specs && spec.specs.length > 0) {
-        spec.specs.forEach(processSpec);
+        spec.specs.forEach(subSpec => processSpec(subSpec, spec.title || suiteTitle));
       }
       if (spec.tests && spec.tests.length > 0) {
         spec.tests.forEach(test => {
-          test.results?.forEach(result => {
+          const lastResult = test.results && test.results.length > 0 
+            ? test.results[test.results.length - 1] 
+            : null;
+          
+          if (lastResult) {
             totalTests++;
-            totalDuration += result.duration || 0;
+            totalDuration += lastResult.duration || 0;
             
             const testIsFailed = test.status === 'unexpected' || test.status === 'timedOut';
-            const resultIsFailed = result.status === 'failed' || result.status === 'timedOut';
+            const resultIsFailed = lastResult.status === 'failed' || lastResult.status === 'timedOut';
             const isFailed = testIsFailed || resultIsFailed;
             
             if (isFailed) {
               failedTests++;
-            } else if (result.status === 'passed') {
+              failedTestsList.push({
+                title: test.title || spec.title || 'Unknown Test',
+                status: 'failed',
+                duration: lastResult.duration,
+                startTime: lastResult.startTime,
+                projectName: test.projectName || 'unknown',
+                error: test.error || lastResult.error || null,
+                location: test.location || lastResult.location || (test.titlePath ? { file: test.titlePath[test.titlePath.length - 1] } : null),
+                retries: test.results ? test.results.length - 1 : 0,
+                attachments: test.attachments || lastResult.attachments || [],
+                stdout: lastResult.stdout || [],
+                stderr: lastResult.stderr || []
+              });
+            } else if (lastResult.status === 'passed') {
               passedTests++;
-            } else if (result.status === 'skipped') {
+            } else if (lastResult.status === 'skipped') {
               skippedTests++;
             }
 
-            const startTime = new Date(result.startTime);
-            const endTime = new Date(startTime.getTime() + (result.duration || 0));
+            const startTime = new Date(lastResult.startTime);
+            const endTime = new Date(startTime.getTime() + (lastResult.duration || 0));
 
             if (!earliestStartTime || startTime < earliestStartTime) {
               earliestStartTime = startTime;
@@ -56,15 +82,7 @@ const testResultsService = {
             if (!latestEndTime || endTime > latestEndTime) {
               latestEndTime = endTime;
             }
-
-            testDetails.push({
-              title: spec.title,
-              status: isFailed ? 'failed' : result.status,
-              duration: result.duration,
-              startTime: result.startTime,
-              projectName: test.projectName || 'unknown'
-            });
-          });
+          }
         });
       }
     };
@@ -87,7 +105,7 @@ const testResultsService = {
       timestamp: earliestStartTime ? earliestStartTime.toISOString() : new Date().toISOString(),
       totalTests,
       passedTests,
-      failedTests,
+      failedTests: failedTests, // Count of failed tests
       skippedTests,
       totalDuration,
       duration: latestEndTime && earliestStartTime 
@@ -95,7 +113,7 @@ const testResultsService = {
         : totalDuration,
       startTime: earliestStartTime ? earliestStartTime.toISOString() : null,
       endTime: latestEndTime ? latestEndTime.toISOString() : null,
-      testDetails,
+      failedTestsDetails: failedTestsList, // Array of failed test details
       raw: data
     };
   },
@@ -144,18 +162,34 @@ const testResultsService = {
     }
     const history = this.getHistory();
     
+    // Try to fetch coverage for historical runs if they don't have it
+    const coverageServiceModule = await import('./coverageService.js');
+    const historyWithCoverage = await Promise.all(
+      history.slice(0, 5).map(async (run) => {
+        if (!run.coverage) {
+          // Try to get coverage from the current coverage report
+          // (coverage reports are cumulative, so this should work)
+          const coverageData = await coverageServiceModule.default.getCoverageData();
+          if (coverageData) {
+            return { ...run, coverage: coverageData };
+          }
+        }
+        return run;
+      })
+    );
+    
     const allResults = [];
     if (current) {
       allResults.push({ ...current, isCurrent: true });
     }
     
-    history.slice(0, 5).forEach(run => {
+    historyWithCoverage.forEach(run => {
       allResults.push({ ...run, isCurrent: false });
     });
     
     return {
       current: current || null,
-      history: history.slice(0, 5),
+      history: historyWithCoverage,
       all: allResults
     };
   },

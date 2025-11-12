@@ -8,8 +8,8 @@ test.describe('Transaction Tests', () => {
             localStorage.clear();
         });
 
-        await page.fill('input[type="email"]', 'admin@test.com');
-        await page.fill('input[type="password"]', 'password');
+        await page.fill('input[type="email"]', 'eladtester@test.test');
+        await page.fill('input[type="password"]', 'elad12345678');
         await page.click('button[type="submit"]');
         await expect(page).toHaveURL('/');
         await page.goto('/transactions');

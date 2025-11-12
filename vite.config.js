@@ -29,6 +29,29 @@ export default defineConfig({
           }
         })
       }
+    },
+    {
+      name: 'serve-coverage',
+      configureServer(server) {
+        server.middlewares.use('/coverage', (req, res, next) => {
+          try {
+            const filePath = resolve(__dirname, 'coverage', req.url.replace(/^\//, ''))
+            const content = readFileSync(filePath, 'utf-8')
+            
+            if (req.url.endsWith('.info')) {
+              res.setHeader('Content-Type', 'text/plain')
+            } else if (req.url.endsWith('.json')) {
+              res.setHeader('Content-Type', 'application/json')
+            } else {
+              res.setHeader('Content-Type', 'text/html')
+            }
+            
+            res.end(content)
+          } catch (err) {
+            next()
+          }
+        })
+      }
     }
   ],
   server: {

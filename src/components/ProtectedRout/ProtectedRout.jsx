@@ -11,7 +11,12 @@ const ProtectedRoute = ({ children }) => {
     return <Loader/> 
   }
 
-  if (!user) {
+  // Check both state and localStorage as fallback
+  // This handles race conditions where state might not be updated yet after login
+  const storedUser = localStorage.getItem('ocbc_auth_user');
+  const isAuthenticated = user || storedUser;
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
   return children;

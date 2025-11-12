@@ -29,11 +29,8 @@ const CICDDashboardPage = () => {
   };
 
   const handleCardClick = (testRun) => {
-    const failedTestsDetails = testRun.failedTestsDetails || (Array.isArray(testRun.failedTests) ? testRun.failedTests : []);
-    const failedTestsArray = Array.isArray(failedTestsDetails) ? failedTestsDetails : [];
-    const failedTestsCount = typeof testRun.failedTests === 'number' ? testRun.failedTests : failedTestsArray.length;
-    if (failedTestsCount > 0 && failedTestsArray.length > 0) {
-      setSelectedTestRun({ ...testRun, failedTestsDetails: failedTestsArray });
+    if (testRun.failedTests > 0) {
+      setSelectedTestRun(testRun);
       setIsModalOpen(true);
     }
   };
@@ -65,36 +62,46 @@ const CICDDashboardPage = () => {
         <button onClick={loadResults} className="refresh-btn">Refresh</button>
       </div>
 
-      {results?.current && (
-        <div className="current-run">
-          <h2>Most Recent Test Run</h2>
-          <TestRunCard 
-            testRun={results.current} 
-            isCurrent={true}
-            onClick={() => handleCardClick(results.current)}
-          />
-        </div>
-      )}
+      {(() => {
+        const history = results?.history || [];
+        const currentRun = history.length > 0 ? history[0] : null;
+        const pastRuns = history.slice(1, 5);
 
-      {results?.history && results.history.length > 0 && (
-        <div className="history-section">
-          <h2>Past Test Runs (Last {results.history.length})</h2>
-          <div className="history-grid">
-            {results.history.map((testRun, index) => {
-              const runNumber = index + 1;
-              return (
+        return (
+          <>
+            {currentRun && (
+              <div className="current-run">
+                <h2>Most Recent Test Run</h2>
                 <TestRunCard 
-                  key={testRun.id} 
-                  testRun={testRun} 
-                  isCurrent={false} 
-                  runNumber={runNumber}
-                  onClick={() => handleCardClick(testRun)}
+                  testRun={currentRun} 
+                  isCurrent={true}
+                  onClick={() => handleCardClick(currentRun)}
                 />
-              );
-            })}
-          </div>
-        </div>
-      )}
+              </div>
+            )}
+
+            {pastRuns.length > 0 && (
+              <div className="history-section">
+                <h2>Past Test Runs (Last {pastRuns.length})</h2>
+                <div className="history-grid">
+                  {pastRuns.map((testRun, index) => {
+                    const runNumber = index + 1;
+                    return (
+                      <TestRunCard 
+                        key={testRun.id} 
+                        testRun={testRun} 
+                        isCurrent={false} 
+                        runNumber={runNumber}
+                        onClick={() => handleCardClick(testRun)}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </>
+        );
+      })()}
 
       {isModalOpen && selectedTestRun && (
         <FailedTestsModal 
@@ -103,7 +110,7 @@ const CICDDashboardPage = () => {
         />
       )}
 
-      {(!results?.current && (!results?.history || results.history.length === 0)) && (
+      {(!results?.history || results.history.length === 0) && (
         <div className="no-results">
           <p>No test results available. Run tests to see results here.</p>
         </div>
@@ -113,15 +120,6 @@ const CICDDashboardPage = () => {
 };
 
 const TestRunCard = ({ testRun, isCurrent, runNumber, onClick }) => {
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'passed': return '#4CAF50';
-      case 'failed': return '#F44336';
-      case 'skipped': return '#FF9800';
-      default: return '#9E9E9E';
-    }
-  };
-
   const getPassRate = (testRun) => {
     if (!testRun || testRun.totalTests === 0) return 0;
     return ((testRun.passedTests / testRun.totalTests) * 100).toFixed(1);
@@ -129,10 +127,7 @@ const TestRunCard = ({ testRun, isCurrent, runNumber, onClick }) => {
 
   const passRate = getPassRate(testRun);
   const isHealthy = passRate >= 80;
-  const failedTestsDetails = testRun.failedTestsDetails || testRun.failedTests || [];
-  const failedTestsArray = Array.isArray(failedTestsDetails) ? failedTestsDetails : [];
-  const failedTestsCount = typeof testRun.failedTests === 'number' ? testRun.failedTests : failedTestsArray.length;
-  const hasFailedTests = failedTestsCount > 0 && failedTestsArray.length > 0;
+  const hasFailedTests = testRun.failedTests > 0;
 
   const getRunTitle = () => {
     if (isCurrent) return 'Current Run';
@@ -148,9 +143,8 @@ const TestRunCard = ({ testRun, isCurrent, runNumber, onClick }) => {
 
   return (
     <div 
-      className={`test-run-card ${isCurrent ? 'current' : ''} ${hasFailedTests ? 'clickable' : ''}`}
+      className={`test-run-card ${isCurrent ? 'current' : ''} ${hasFailedTests ? 'clickable has-cursor-pointer' : ''}`}
       onClick={handleClick}
-      style={{ cursor: hasFailedTests ? 'pointer' : 'default' }}
     >
       <div className="card-header">
         <h3>{getRunTitle()}</h3>
@@ -167,19 +161,19 @@ const TestRunCard = ({ testRun, isCurrent, runNumber, onClick }) => {
           </div>
           <div className="stat-item passed">
             <span className="stat-label">Passed</span>
-            <span className="stat-value" style={{ color: getStatusColor('passed') }}>
+            <span className="stat-value stat-value-passed">
               {testRun.passedTests || 0}
             </span>
           </div>
           <div className="stat-item failed">
             <span className="stat-label">Failed</span>
-            <span className="stat-value" style={{ color: getStatusColor('failed') }}>
+            <span className="stat-value stat-value-failed">
               {testRun.failedTests || 0}
             </span>
           </div>
           <div className="stat-item skipped">
             <span className="stat-label">Skipped</span>
-            <span className="stat-value" style={{ color: getStatusColor('skipped') }}>
+            <span className="stat-value stat-value-skipped">
               {testRun.skippedTests || 0}
             </span>
           </div>
@@ -225,10 +219,10 @@ const TestRunCard = ({ testRun, isCurrent, runNumber, onClick }) => {
           </div>
         )}
 
-        {failedTestsCount > 0 && (
+        {hasFailedTests && (
           <div className="warning-banner">
-            {failedTestsCount} test(s) failed in this run
-            {hasFailedTests && <span className="click-hint"> - Click to view details</span>}
+            <span>{testRun.failedTests} test(s) failed in this run</span>
+            <span className="click-hint">Click to view details</span>
           </div>
         )}
       </div>
@@ -237,15 +231,7 @@ const TestRunCard = ({ testRun, isCurrent, runNumber, onClick }) => {
 };
 
 const FailedTestsModal = ({ testRun, onClose }) => {
-  const failedTestsDetails = testRun.failedTestsDetails || (Array.isArray(testRun.failedTests) ? testRun.failedTests : []);
-  const failedTestsArray = Array.isArray(failedTestsDetails) ? failedTestsDetails : [];
-  const stripAnsiCodes = (text) => {
-    if (!text) return text;
-    return String(text)
-      .replace(/\x1b\[[0-9;]*m/g, '')
-      .replace(/\x1b\[[0-9;]*[A-Za-z]/g, '')
-      .trim();
-  };
+  const failedTests = testRun.failedTestsDetails || testRun.testDetails?.filter(test => test.status === 'failed') || [];
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -257,99 +243,229 @@ const FailedTestsModal = ({ testRun, onClose }) => {
         <div className="modal-body">
           <div className="failed-tests-summary">
             <div className="summary-item">
-              <span className="summary-label">Total Failed Tests</span>
-              <span className="summary-value">{failedTestsArray.length}</span>
+              <span className="summary-label">Total Failed Tests:</span>
+              <strong className="summary-value">{testRun.failedTests}</strong>
             </div>
             <div className="summary-item">
-              <span className="summary-label">Run Date</span>
-              <span className="summary-value">{testResultsService.formatDate(testRun.timestamp)}</span>
+              <span className="summary-label">Run Date:</span>
+              <span className="summary-value">{testResultsService.formatDate(testRun.timestamp || testRun.startTime)}</span>
             </div>
             <div className="summary-item">
-              <span className="summary-label">Total Duration</span>
+              <span className="summary-label">Total Duration:</span>
               <span className="summary-value">{testResultsService.formatDuration(testRun.duration || testRun.totalDuration || 0)}</span>
             </div>
           </div>
-
-          <div className="failed-tests-list">
-            {failedTestsArray.map((test, index) => (
-              <div key={index} className="failed-test-item">
-                <div className="test-header">
-                  <div className="test-number">{index + 1}</div>
-                  <div className="test-title-section">
-                    <div className="test-title-row">
-                      <span className="test-status-badge failed">Failed</span>
-                      <span className="test-name">{test.title || 'Unknown Test'}</span>
-                    </div>
-                    {test.error?.message && (
-                      <div className="test-error-message">
-                        {stripAnsiCodes(test.error.message)}
-                      </div>
-                    )}
-                    <div className="test-header-meta">
-                      <div className="test-meta-info">
-                        {test.duration && (
-                          <span className="meta-badge">Duration: {testResultsService.formatDuration(test.duration)}</span>
-                        )}
-                        {test.projectName && (
-                          <span className="meta-badge">Project: {test.projectName}</span>
-                        )}
-                        {test.retries > 0 && (
-                          <span className="meta-badge retry">Retries: {test.retries}</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {test.location && (
-                  <div className="test-file-location">
-                    <span className="file-path">{test.location.file || 'Unknown file'}</span>
-                    {test.location.line && (
-                      <span className="file-line">Line: {test.location.line}:{test.location.column || 0}</span>
-                    )}
-                  </div>
-                )}
-                {test.error && (
-                  <div className="test-details">
-                    <div className="detail-section error-section">
-                      <div className="detail-section-title">Error Details</div>
-                      {test.error.message && (
-                        <div className="error-message-box">
-                          <strong>Error Message:</strong>
-                          <pre className="error-message">{stripAnsiCodes(test.error.message)}</pre>
-                        </div>
-                      )}
-                      {test.location && (
-                        <div className="error-location">
-                          <strong>Location:</strong>
-                          <span> {test.location.file || 'Unknown'}</span>
-                          {test.location.line && (
-                            <span> at line {test.location.line}:{test.location.column || 0}</span>
-                          )}
-                        </div>
-                      )}
-                      {test.error.stack && (
-                        <div className="error-stack">
-                          <div className="stack-summary">Stack Trace</div>
-                          <pre className="stack-trace">{stripAnsiCodes(test.error.stack)}</pre>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-
-          {failedTestsArray.length === 0 && (
+          {failedTests.length > 0 ? (
+            <div className="failed-tests-list">
+              {failedTests.map((test, index) => (
+                <FailedTestDetail key={index} test={test} index={index + 1} />
+              ))}
+            </div>
+          ) : (
             <div className="no-failed-tests">
-              No failed test details available.
+              <p>No failed test details available.</p>
             </div>
           )}
         </div>
         <div className="modal-footer">
-          <button className="close-modal-btn" onClick={onClose}>Close</button>
+          <button onClick={onClose} className="close-modal-btn">Close</button>
         </div>
       </div>
+    </div>
+  );
+};
+
+const FailedTestDetail = ({ test, index }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  const hasDetails = test.error || test.attachments?.length > 0 || test.stdout?.length > 0 || test.stderr?.length > 0;
+
+  return (
+    <div className={`failed-test-item ${isExpanded ? 'expanded' : ''}`}>
+      <div className="test-header" onClick={hasDetails ? toggleExpand : undefined}>
+        <div className="test-header-main">
+          <div className="test-number">{index}</div>
+          <div className="test-title-section">
+            <div className="test-title-row">
+              <span className="test-status-badge failed">Failed</span>
+              <span className="test-name">{test.title}</span>
+            </div>
+            {test.error?.message && (
+              <div className="test-error-message">
+                {testResultsService.stripAnsiCodes(test.error.message)}
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="test-header-meta">
+          <div className="test-meta-info">
+            {test.duration && (
+              <span className="meta-badge">Duration: {testResultsService.formatDuration(test.duration)}</span>
+            )}
+            {test.projectName && test.projectName !== 'unknown' && (
+              <span className="meta-badge">{test.projectName}</span>
+            )}
+            {(test.retries > 0 || test.retry > 0) && (
+              <span className="meta-badge retry">Retry: {test.retries || test.retry}</span>
+            )}
+          </div>
+          {hasDetails && (
+            <button className="expand-btn" onClick={toggleExpand} aria-label={isExpanded ? 'Collapse' : 'Expand'}>
+              {isExpanded ? '▼' : '▶'}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {test.file && test.file !== 'unknown' && (
+        <div className="test-file-location">
+          <span className="file-path">{testResultsService.getFileName(test.file)}</span>
+          {test.line && (
+            <span className="file-line">Line {test.line}{test.column ? `:${test.column}` : ''}</span>
+          )}
+        </div>
+      )}
+
+      {test.location && test.location.file && (
+        <div className="test-file-location">
+          <span className="file-path">{testResultsService.getFileName(test.location.file)}</span>
+          {test.location.line && (
+            <span className="file-line">Line {test.location.line}{test.location.column ? `:${test.location.column}` : ''}</span>
+          )}
+        </div>
+      )}
+
+      {isExpanded && hasDetails && (
+        <div className="test-details">
+          {test.error && (
+            <div className="detail-section error-section">
+              <h4 className="detail-section-title">Error Details</h4>
+              {test.error.message && (
+                <div className="error-message-box">
+                  <strong>Error Message:</strong>
+                  <pre className="error-message">{testResultsService.stripAnsiCodes(test.error.message)}</pre>
+                </div>
+              )}
+              {test.error.location && (
+                <div className="error-location">
+                  <strong>Error Location:</strong>
+                  <span>{testResultsService.getFileName(test.error.location.file)}</span>
+                  <span>Line {test.error.location.line}</span>
+                  {test.error.location.column && <span>Column {test.error.location.column}</span>}
+                </div>
+              )}
+              {test.error.snippet && (
+                <div className="error-snippet">
+                  <strong>Code Snippet:</strong>
+                  <div className="snippet-code">
+                    {(() => {
+                      const cleanedSnippet = testResultsService.stripAnsiCodes(test.error.snippet);
+                      const lines = cleanedSnippet.split('\n');
+                      const errorLineIndices = new Set();
+                      
+                      lines.forEach((line, idx) => {
+                        if (line.trim().startsWith('>') || line.includes('^') || line.trim().startsWith('|')) {
+                          errorLineIndices.add(idx);
+                          if (idx > 0) {
+                            errorLineIndices.add(idx - 1);
+                          }
+                        }
+                      });
+                      
+                      return lines.map((line, idx) => {
+                        if (errorLineIndices.has(idx)) {
+                          return (
+                            <div key={idx} className="error-line">
+                              {line || '\u00A0'}
+                            </div>
+                          );
+                        }
+                        return (
+                          <div key={idx} className="snippet-line">
+                            {line || '\u00A0'}
+                          </div>
+                        );
+                      });
+                    })()}
+                  </div>
+                </div>
+              )}
+              {test.error.stack && (
+                <div className="error-stack">
+                  <details>
+                    <summary className="stack-summary">Stack Trace</summary>
+                    <pre className="stack-trace">{testResultsService.formatStackTrace(test.error.stack)}</pre>
+                  </details>
+                </div>
+              )}
+            </div>
+          )}
+
+          {test.attachments && test.attachments.length > 0 && (
+            <div className="detail-section attachments-section">
+              <h4 className="detail-section-title">Attachments</h4>
+              <div className="attachments-list">
+                {test.attachments.map((attachment, idx) => (
+                  <div key={idx} className="attachment-item">
+                    {attachment.type === 'screenshot' && (attachment.body || attachment.path) ? (
+                      <div className="screenshot-attachment">
+                        <img 
+                          src={attachment.body 
+                            ? `data:${attachment.contentType || 'image/png'};base64,${attachment.body}` 
+                            : attachment.path 
+                              ? attachment.path.startsWith('/') 
+                                ? attachment.path 
+                                : `/test-results/${attachment.path.split(/[\\\/]/).pop()}`
+                              : ''} 
+                          alt={attachment.name || 'Screenshot'} 
+                          className="screenshot-image"
+                          onError={(e) => {
+                            const parent = e.target.parentElement;
+                            if (parent) {
+                              parent.innerHTML = `<div class="screenshot-error">Failed to load screenshot: ${attachment.name || 'Screenshot'}</div>`;
+                            }
+                          }}
+                        />
+                        <span className="attachment-name">{attachment.name || 'Screenshot'}</span>
+                      </div>
+                    ) : (
+                      <div className="attachment-info">
+                        <span className="attachment-type-badge">{attachment.type || 'other'}</span>
+                        <span className="attachment-name">{attachment.name || 'Attachment'}</span>
+                        {attachment.path && (
+                          <span className="attachment-path">{attachment.path}</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {((test.stdout && test.stdout.length > 0) || (test.stderr && test.stderr.length > 0)) && (
+            <div className="detail-section console-section">
+              <h4 className="detail-section-title">Console Output</h4>
+              {test.stdout && test.stdout.length > 0 && (
+                <div className="console-output stdout">
+                  <strong>Standard Output:</strong>
+                  <pre className="console-text">{test.stdout.join('\n')}</pre>
+                </div>
+              )}
+              {test.stderr && test.stderr.length > 0 && (
+                <div className="console-output stderr">
+                  <strong>Error Output:</strong>
+                  <pre className="console-text error">{test.stderr.join('\n')}</pre>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

@@ -32,6 +32,7 @@ const testResultsService = {
     let totalDuration = 0;
     let earliestStartTime = null;
     let latestEndTime = null;
+    const testDetails = [];
     const failedTestsList = [];
 
     const processSpec = (spec, suiteTitle = '') => {
@@ -52,21 +53,32 @@ const testResultsService = {
             const resultIsFailed = lastResult.status === 'failed' || lastResult.status === 'timedOut';
             const isFailed = testIsFailed || resultIsFailed;
             
+            const errorDetails = this.extractErrorDetails(lastResult, test);
+            const attachments = this.extractAttachments(lastResult, test);
+            
+            const testDetail = {
+              title: test.title || spec.title || 'Unknown Test',
+              status: isFailed ? 'failed' : lastResult.status,
+              duration: lastResult.duration,
+              startTime: lastResult.startTime,
+              projectName: test.projectName || 'unknown',
+              error: errorDetails,
+              location: test.location || lastResult.location || (test.titlePath ? { file: test.titlePath[test.titlePath.length - 1] } : null),
+              retries: test.results ? test.results.length - 1 : 0,
+              retry: test.results ? test.results.length - 1 : 0,
+              attachments: attachments,
+              stdout: lastResult.stdout || [],
+              stderr: lastResult.stderr || [],
+              file: test.location?.file || lastResult.location?.file || (test.titlePath ? test.titlePath[test.titlePath.length - 1] : null),
+              line: test.location?.line || lastResult.location?.line,
+              column: test.location?.column || lastResult.location?.column
+            };
+            
+            testDetails.push(testDetail);
+            
             if (isFailed) {
               failedTests++;
-              failedTestsList.push({
-                title: test.title || spec.title || 'Unknown Test',
-                status: 'failed',
-                duration: lastResult.duration,
-                startTime: lastResult.startTime,
-                projectName: test.projectName || 'unknown',
-                error: test.error || lastResult.error || null,
-                location: test.location || lastResult.location || (test.titlePath ? { file: test.titlePath[test.titlePath.length - 1] } : null),
-                retries: test.results ? test.results.length - 1 : 0,
-                attachments: test.attachments || lastResult.attachments || [],
-                stdout: lastResult.stdout || [],
-                stderr: lastResult.stderr || []
-              });
+              failedTestsList.push(testDetail);
             } else if (lastResult.status === 'passed') {
               passedTests++;
             } else if (lastResult.status === 'skipped') {
@@ -113,7 +125,8 @@ const testResultsService = {
         : totalDuration,
       startTime: earliestStartTime ? earliestStartTime.toISOString() : null,
       endTime: latestEndTime ? latestEndTime.toISOString() : null,
-      failedTestsDetails: failedTestsList, // Array of failed test details
+      testDetails: testDetails, // All test details
+      failedTestsDetails: failedTestsList, // Array of failed test details only
       raw: data
     };
   },
@@ -124,11 +137,13 @@ const testResultsService = {
     const history = this.getHistory();
     
     const existingIndex = history.findIndex(run => run.id === results.id);
-    if (existingIndex !== -1) {
-      history.splice(existingIndex, 1);
-    }
     
-    history.unshift(results);
+    if (existingIndex === -1) {
+      history.unshift(results);
+    } else {
+      history.splice(existingIndex, 1);
+      history.unshift(results);
+    }
     
     while (history.length > 5) {
       history.pop();
@@ -138,58 +153,66 @@ const testResultsService = {
   },
 
   getHistory() {
-    const stored = localStorage.getItem(TEST_RESULTS_STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
+    try {
+      const stored = localStorage.getItem(TEST_RESULTS_STORAGE_KEY);
+      if (!stored) return [];
+      const history = JSON.parse(stored);
+      return Array.isArray(history) ? history.slice(0, 5) : [];
+    } catch (error) {
+      console.error('Error reading test results history from localStorage:', error);
+      return [];
+    }
   },
 
   async getLatestResults() {
-    const current = await this.getCurrentResults();
-    if (current) {
-      this.archiveCurrentResults(current);
-    }
     const history = this.getHistory();
+    const current = await this.getCurrentResults();
+    
+    if (current) {
+      const existingRun = history.find(run => run.id === current.id);
+      if (!existingRun) {
+        this.archiveCurrentResults(current);
+        return {
+          current: current,
+          history: this.getHistory()
+        };
+      }
+    }
     
     return {
       current: current || null,
-      history: history.slice(0, 5)
+      history: history
     };
   },
 
   async getAllResults() {
     const current = await this.getCurrentResults();
-    if (current) {
-      this.archiveCurrentResults(current);
-    }
-    const history = this.getHistory();
+    let history = this.getHistory();
     
-    // Try to fetch coverage for historical runs if they don't have it
-    const coverageServiceModule = await import('./coverageService.js');
-    const historyWithCoverage = await Promise.all(
-      history.slice(0, 5).map(async (run) => {
-        if (!run.coverage) {
-          // Try to get coverage from the current coverage report
-          // (coverage reports are cumulative, so this should work)
-          const coverageData = await coverageServiceModule.default.getCoverageData();
-          if (coverageData) {
-            return { ...run, coverage: coverageData };
-          }
-        }
-        return run;
-      })
-    );
+    if (current) {
+      const existingIndex = history.findIndex(run => run.id === current.id);
+      if (existingIndex === -1) {
+        this.archiveCurrentResults(current);
+        history = this.getHistory();
+      } else {
+        history.splice(existingIndex, 1);
+        this.archiveCurrentResults(current);
+        history = this.getHistory();
+      }
+    }
     
     const allResults = [];
     if (current) {
       allResults.push({ ...current, isCurrent: true });
     }
     
-    historyWithCoverage.forEach(run => {
+    history.slice(0, 5).forEach(run => {
       allResults.push({ ...run, isCurrent: false });
     });
     
     return {
       current: current || null,
-      history: historyWithCoverage,
+      history: history.slice(0, 5),
       all: allResults
     };
   },
@@ -206,6 +229,119 @@ const testResultsService = {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
     return date.toLocaleString();
+  },
+
+  extractErrorDetails(result, test) {
+    if (!result.error && !test.error) return null;
+
+    const error = result.error || test.error;
+    return {
+      message: error.message || 'Test failed',
+      stack: error.stack || null,
+      value: error.value || null,
+      snippet: error.snippet || null,
+      location: error.location ? {
+        file: error.location.file,
+        line: error.location.line,
+        column: error.location.column
+      } : null
+    };
+  },
+
+  extractAttachments(result, test) {
+    const attachments = [];
+    
+    if (result.attachments) {
+      result.attachments.forEach(attachment => {
+        attachments.push({
+          name: attachment.name,
+          contentType: attachment.contentType,
+          path: attachment.path,
+          body: attachment.body,
+          type: this.getAttachmentType(attachment.name, attachment.contentType)
+        });
+      });
+    }
+
+    if (test.attachments) {
+      test.attachments.forEach(attachment => {
+        attachments.push({
+          name: attachment.name,
+          contentType: attachment.contentType,
+          path: attachment.path,
+          body: attachment.body,
+          type: this.getAttachmentType(attachment.name, attachment.contentType)
+        });
+      });
+    }
+
+    return attachments;
+  },
+
+  getAttachmentType(name, contentType) {
+    if (!name && !contentType) return 'unknown';
+    
+    const nameLower = (name || '').toLowerCase();
+    const contentTypeLower = (contentType || '').toLowerCase();
+
+    if (nameLower.includes('screenshot') || contentTypeLower.includes('image')) {
+      return 'screenshot';
+    }
+    if (nameLower.includes('trace') || contentTypeLower.includes('application')) {
+      return 'trace';
+    }
+    if (nameLower.includes('video') || contentTypeLower.includes('video')) {
+      return 'video';
+    }
+    if (nameLower.includes('har') || contentTypeLower.includes('har')) {
+      return 'har';
+    }
+    return 'other';
+  },
+
+  formatErrorMessage(error) {
+    if (!error) return null;
+    
+    if (error.message) {
+      return this.stripAnsiCodes(error.message);
+    }
+    return 'Test failed without error message';
+  },
+
+  stripAnsiCodes(text) {
+    if (!text) return text;
+    return String(text)
+      .replace(/\x1b\[[0-9;]*m/g, '')
+      .replace(/\x1b\[[0-9;]*[A-Za-z]/g, '')
+      .replace(/\x1b\[2m/g, '')
+      .replace(/\x1b\[22m/g, '')
+      .replace(/\x1b\[31m/g, '')
+      .replace(/\x1b\[39m/g, '')
+      .replace(/\x1b\[36m/g, '')
+      .replace(/\x1b\[33m/g, '')
+      .replace(/\x1b\[35m/g, '')
+      .replace(/\x1b\[32m/g, '')
+      .replace(/\x1b\[90m/g, '')
+      .replace(/\x1b\[0m/g, '')
+      .replace(/\x1b\[1m/g, '')
+      .replace(/\\x1b\[[0-9;]*m/g, '')
+      .replace(/\\x1b\[[0-9;]*[A-Za-z]/g, '')
+      .replace(/\^\x1b\[22m/g, '^')
+      .replace(/\x1b\[22m\^/g, '^')
+      .trim();
+  },
+
+  formatStackTrace(stack) {
+    if (!stack) return null;
+    
+    const lines = stack.split('\n');
+    return lines.slice(0, 10).join('\n');
+  },
+
+  getFileName(filePath) {
+    if (!filePath) return 'Unknown';
+    const parts = filePath.split(/[/\\]/);
+    return parts[parts.length - 1];
   }
 };
 

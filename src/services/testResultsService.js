@@ -107,7 +107,14 @@ const testResultsService = {
     
     const existingIndex = history.findIndex(run => run.id === results.id);
     if (existingIndex !== -1) {
+      const existingRunId = history[existingIndex].runId;
       history.splice(existingIndex, 1);
+      results.runId = existingRunId;
+    } else {
+      results.runId = 1;
+      history.forEach(run => {
+        if (run.runId) run.runId += 1;
+      });
     }
     
     history.unshift(results);
@@ -115,6 +122,10 @@ const testResultsService = {
     while (history.length > 5) {
       history.pop();
     }
+    
+    history.forEach((run, index) => {
+      run.runId = index + 1;
+    });
 
     localStorage.setItem(TEST_RESULTS_STORAGE_KEY, JSON.stringify(history));
   },

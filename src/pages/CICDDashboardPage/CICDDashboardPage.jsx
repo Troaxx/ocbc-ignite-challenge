@@ -59,8 +59,8 @@ const CICDDashboardPage = () => {
         <div className="history-section">
           <h2>Past Test Runs (Last {results.history.length})</h2>
           <div className="history-grid">
-            {results.history.map((testRun, index) => {
-              const runNumber = index + 1;
+            {results.history.map((testRun) => {
+              const runNumber = testRun.runId || 1;
               return (
                 <TestRunCard 
                   key={testRun.id} 

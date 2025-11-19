@@ -145,7 +145,7 @@ const testResultsService = {
       history.unshift(results);
     }
     
-    while (history.length > 5) {
+    while (history.length > 6) {
       history.pop();
     }
     
@@ -161,7 +161,7 @@ const testResultsService = {
       const stored = localStorage.getItem(TEST_RESULTS_STORAGE_KEY);
       if (!stored) return [];
       const history = JSON.parse(stored);
-      return Array.isArray(history) ? history.slice(0, 5) : [];
+      return Array.isArray(history) ? history.slice(0, 6) : [];
     } catch (error) {
       console.error('Error reading test results history from localStorage:', error);
       return [];
@@ -210,13 +210,13 @@ const testResultsService = {
       allResults.push({ ...current, isCurrent: true });
     }
     
-    history.slice(0, 5).forEach(run => {
+    history.slice(0, 6).forEach(run => {
       allResults.push({ ...run, isCurrent: false });
     });
     
     return {
       current: current || null,
-      history: history.slice(0, 5),
+      history: history.slice(0, 6),
       all: allResults
     };
   },

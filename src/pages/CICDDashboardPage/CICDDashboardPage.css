@@ -4,7 +4,7 @@
   width: 100%;
   max-width: 100%;
   min-height: 100vh;
-  gap: 1.5rem;
+  gap: 2.5rem;
   padding: 1.5rem 2rem;
   box-sizing: border-box;
   background: #f5f7fa;
@@ -15,8 +15,13 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid #e0e0e0;
+  padding: 1.5rem 2rem;
+  padding-bottom: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
+  border-bottom: 3px solid #EE3124;
 }
 
 .dashboard-header h1 {
@@ -45,27 +50,42 @@
 
 .current-run {
   width: 100%;
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
+  margin-top: 1rem;
 }
 
 .current-run h2 {
   font-size: 1.75rem;
   color: #333;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   font-weight: 600;
   line-height: 1.3;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #EE3124;
 }
 
 .graphs-section {
   width: 100%;
-  margin-top: 0;
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
+  margin-top: 1rem;
 }
 
 .graphs-section h2 {
   font-size: 1.75rem;
   color: #333;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   font-weight: 600;
   line-height: 1.3;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #2196F3;
 }
 
 .graphs-grid {
@@ -110,14 +130,22 @@
 
 .history-section {
   width: 100%;
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
+  margin-top: 1rem;
 }
 
 .history-section h2 {
   font-size: 1.75rem;
   color: #333;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   font-weight: 600;
   line-height: 1.3;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #4CAF50;
 }
 
 .history-grid {
@@ -1345,11 +1373,32 @@
 @media (max-width: 768px) {
   .cicd-dashboard {
     padding: 1rem;
-    gap: 1rem;
+    gap: 1.5rem;
+  }
+
+  .dashboard-header {
+    padding: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.7rem;
   }
 
   .dashboard-header h1 {
     font-size: 2rem;
+  }
+
+  .current-run,
+  .graphs-section,
+  .history-section {
+    padding: 1.25rem;
+    margin-top: 0.5rem;
+  }
+
+  .current-run h2,
+  .graphs-section h2,
+  .history-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
   }
 
   .history-grid {
@@ -1366,12 +1415,6 @@
 
   .graph-card {
     padding: 1rem;
-  }
-
-  .dashboard-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.7rem;
   }
 
   .failed-tests-modal {

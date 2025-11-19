@@ -67,7 +67,7 @@ const CICDDashboardPage = () => {
         const history = results?.history || [];
         const allRuns = results?.all || [];
         const currentRun = history.length > 0 ? history[0] : null;
-        const pastRuns = history.slice(1, 5);
+        const pastRuns = history.slice(1).slice(0, 5);
 
         return (
           <>

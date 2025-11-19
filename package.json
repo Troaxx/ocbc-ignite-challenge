@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "test": "playwright test",
+    "test": "playwright test && npm run coverage:report",
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",
     "test:chromium": "playwright test --project=chromium",
@@ -16,7 +16,6 @@
     "test:webkit": "playwright test --project=webkit",
     "test:debug": "playwright test --debug",
     "test:report": "playwright show-report",
-    "test:coverage": "playwright test && npm run coverage:report",
     "coverage:report": "nyc report --reporter=html --reporter=text --reporter=lcov",
     "coverage:view": "open coverage/index.html"
   },

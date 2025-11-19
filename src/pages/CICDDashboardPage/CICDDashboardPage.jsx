@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ComposedChart, Area, AreaChart } from 'recharts';
 import testResultsService from '../../services/testResultsService';
 import Loader from '../../components/Loader/Loader';
 import './CICDDashboardPage.css';
@@ -64,6 +65,7 @@ const CICDDashboardPage = () => {
 
       {(() => {
         const history = results?.history || [];
+        const allRuns = results?.all || [];
         const currentRun = history.length > 0 ? history[0] : null;
         const pastRuns = history.slice(1, 5);
 
@@ -77,6 +79,15 @@ const CICDDashboardPage = () => {
                   isCurrent={true}
                   onClick={() => handleCardClick(currentRun)}
                 />
+              </div>
+            )}
+
+            {allRuns.length > 0 && (
+              <div className="graphs-section">
+                <h2>Test Run Analytics</h2>
+                <div className="graphs-grid">
+                  <TestRunGraphs runs={allRuns} />
+                </div>
               </div>
             )}
 
@@ -467,6 +478,146 @@ const FailedTestDetail = ({ test, index }) => {
         </div>
       )}
     </div>
+  );
+};
+
+const TestRunGraphs = ({ runs }) => {
+  const prepareChartData = () => {
+    return runs
+      .slice()
+      .reverse()
+      .map((run, index) => {
+        const passRate = run.totalTests > 0 
+          ? ((run.passedTests / run.totalTests) * 100).toFixed(1) 
+          : 0;
+        const duration = run.duration || run.totalDuration || 0;
+        const durationSeconds = (duration / 1000).toFixed(1);
+        
+        const date = run.timestamp || run.startTime;
+        const dateObj = date ? new Date(date) : new Date();
+        const dateLabel = dateObj.toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+
+        return {
+          name: `Run ${runs.length - index}`,
+          date: dateLabel,
+          passRate: parseFloat(passRate),
+          passed: run.passedTests || 0,
+          failed: run.failedTests || 0,
+          skipped: run.skippedTests || 0,
+          total: run.totalTests || 0,
+          duration: parseFloat(durationSeconds),
+          coverage: run.coverage?.overall?.percentage 
+            ? parseFloat(run.coverage.overall.percentage) 
+            : null
+        };
+      });
+  };
+
+  const chartData = prepareChartData();
+  const hasCoverage = chartData.some(d => d.coverage !== null);
+
+  if (chartData.length === 0) {
+    return null;
+  }
+
+  return (
+    <>
+      <div className="graph-card">
+        <h3 className="graph-title">Pass Rate Over Time</h3>
+        <ResponsiveContainer width="100%" height={250}>
+          <LineChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis domain={[0, 100]} label={{ value: 'Pass Rate (%)', angle: -90, position: 'insideLeft' }} />
+            <Tooltip 
+              formatter={(value) => `${value}%`}
+              labelFormatter={(label) => `Run: ${label}`}
+            />
+            <Legend />
+            <Line 
+              type="monotone" 
+              dataKey="passRate" 
+              stroke="#4CAF50" 
+              strokeWidth={2}
+              dot={{ fill: '#4CAF50', r: 5 }}
+              name="Pass Rate (%)"
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="graph-card">
+        <h3 className="graph-title">Test Results Distribution</h3>
+        <ResponsiveContainer width="100%" height={250}>
+          <BarChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis label={{ value: 'Number of Tests', angle: -90, position: 'insideLeft' }} />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="passed" stackId="a" fill="#4CAF50" name="Passed" />
+            <Bar dataKey="failed" stackId="a" fill="#F44336" name="Failed" />
+            <Bar dataKey="skipped" stackId="a" fill="#FF9800" name="Skipped" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="graph-card">
+        <h3 className="graph-title">Test Duration Over Time</h3>
+        <ResponsiveContainer width="100%" height={250}>
+          <AreaChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis label={{ value: 'Duration (seconds)', angle: -90, position: 'insideLeft' }} />
+            <Tooltip 
+              formatter={(value) => `${value}s`}
+              labelFormatter={(label) => `Run: ${label}`}
+            />
+            <Legend />
+            <Area 
+              type="monotone" 
+              dataKey="duration" 
+              stroke="#2196F3" 
+              fill="#2196F3" 
+              fillOpacity={0.6}
+              name="Duration (s)"
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+
+      {hasCoverage && (
+        <div className="graph-card">
+          <h3 className="graph-title">Code Coverage Over Time</h3>
+          <ResponsiveContainer width="100%" height={250}>
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis domain={[0, 100]} label={{ value: 'Coverage (%)', angle: -90, position: 'insideLeft' }} />
+              <Tooltip 
+                formatter={(value) => value !== null ? `${value}%` : 'N/A'}
+                labelFormatter={(label) => `Run: ${label}`}
+              />
+              <Legend />
+              <Line 
+                type="monotone" 
+                dataKey="coverage" 
+                stroke="#9C27B0" 
+                strokeWidth={2}
+                dot={{ fill: '#9C27B0', r: 5 }}
+                name="Coverage (%)"
+                connectNulls={false}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+    </>
   );
 };
 

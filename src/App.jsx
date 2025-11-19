@@ -6,6 +6,7 @@ import { FetchClientsProvider } from "./context/FetchClientsContext.jsx";
 import { AddClientPage, ClientManagePage, HomePage, LoginPage, NotFoundPage, SingleClientPage, TransactionsPage, CICDDashboardPage } from "./pages";
 import { Layout, ProtectedRoute } from "./components";
 
+//testing
 function App() {
   const router = createBrowserRouter([
     {

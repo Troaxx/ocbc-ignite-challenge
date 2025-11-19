@@ -3,18 +3,37 @@ const coverageService = {
     try {
       const response = await fetch('/coverage/lcov.info');
       if (!response.ok) {
+        if (response.status === 404) {
+          console.warn('Coverage file not found. Run tests with coverage to generate: npm run test:coverage');
+        }
         return null;
       }
       const lcovData = await response.text();
-      return this.parseLcovData(lcovData);
+      
+      if (!lcovData || lcovData.trim().length === 0) {
+        console.warn('Coverage file is empty. Coverage may not have been collected during tests.');
+        return null;
+      }
+      
+      const parsed = this.parseLcovData(lcovData);
+      
+      if (parsed && parsed.overall && parseFloat(parsed.overall.percentage) === 0) {
+        console.warn('Coverage data parsed but shows 0%. This may indicate no coverage was collected.');
+      }
+      
+      return parsed;
     } catch (error) {
       console.error('Error fetching coverage data:', error);
+      console.info('To generate coverage: 1) Run tests with dev server: npm run dev (in one terminal) and npm test (in another), 2) Generate report: npm run coverage:report');
       return null;
     }
   },
 
   parseLcovData(lcovText) {
-    if (!lcovText) return null;
+    if (!lcovText || lcovText.trim().length === 0) {
+      console.warn('Empty LCOV data provided');
+      return null;
+    }
 
     const lines = lcovText.split('\n');
     let totalLines = 0;
@@ -118,6 +137,15 @@ const coverageService = {
 
   formatCoveragePercentage(percentage) {
     return `${parseFloat(percentage).toFixed(1)}%`;
+  },
+
+  async checkCoverageAvailability() {
+    try {
+      const response = await fetch('/coverage/lcov.info', { method: 'HEAD' });
+      return response.ok;
+    } catch {
+      return false;
+    }
   }
 };
 

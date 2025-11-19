@@ -8,7 +8,16 @@ const testResultsService = {
         throw new Error('Failed to fetch test results');
       }
       const data = await response.json();
-      return this.parseTestResults(data);
+      const testResults = this.parseTestResults(data);
+      
+      // Dynamically import coverage service to avoid circular dependencies
+      const coverageServiceModule = await import('./coverageService.js');
+      const coverageData = await coverageServiceModule.default.getCoverageData();
+      if (coverageData) {
+        testResults.coverage = coverageData;
+      }
+      
+      return testResults;
     } catch (error) {
       console.error('Error fetching test results:', error);
       return null;
@@ -24,31 +33,60 @@ const testResultsService = {
     let earliestStartTime = null;
     let latestEndTime = null;
     const testDetails = [];
+    const failedTestsList = [];
 
-    const processSpec = (spec) => {
+    const processSpec = (spec, suiteTitle = '') => {
       if (spec.specs && spec.specs.length > 0) {
-        spec.specs.forEach(processSpec);
+        spec.specs.forEach(subSpec => processSpec(subSpec, spec.title || suiteTitle));
       }
       if (spec.tests && spec.tests.length > 0) {
         spec.tests.forEach(test => {
-          test.results?.forEach(result => {
+          const lastResult = test.results && test.results.length > 0 
+            ? test.results[test.results.length - 1] 
+            : null;
+          
+          if (lastResult) {
             totalTests++;
-            totalDuration += result.duration || 0;
+            totalDuration += lastResult.duration || 0;
             
             const testIsFailed = test.status === 'unexpected' || test.status === 'timedOut';
-            const resultIsFailed = result.status === 'failed' || result.status === 'timedOut';
+            const resultIsFailed = lastResult.status === 'failed' || lastResult.status === 'timedOut';
             const isFailed = testIsFailed || resultIsFailed;
+            
+            const errorDetails = this.extractErrorDetails(lastResult, test);
+            const attachments = this.extractAttachments(lastResult, test);
+            
+            const testDetail = {
+              title: test.title || spec.title || 'Unknown Test',
+              status: isFailed ? 'failed' : lastResult.status,
+              duration: lastResult.duration,
+              startTime: lastResult.startTime,
+              projectName: test.projectName || 'unknown',
+              error: errorDetails,
+              location: test.location || lastResult.location || (test.titlePath ? { file: test.titlePath[test.titlePath.length - 1] } : null),
+              retries: test.results ? test.results.length - 1 : 0,
+              retry: test.results ? test.results.length - 1 : 0,
+              attachments: attachments,
+              stdout: lastResult.stdout || [],
+              stderr: lastResult.stderr || [],
+              file: test.location?.file || lastResult.location?.file || (test.titlePath ? test.titlePath[test.titlePath.length - 1] : null),
+              line: test.location?.line || lastResult.location?.line,
+              column: test.location?.column || lastResult.location?.column
+            };
+            
+            testDetails.push(testDetail);
             
             if (isFailed) {
               failedTests++;
-            } else if (result.status === 'passed') {
+              failedTestsList.push(testDetail);
+            } else if (lastResult.status === 'passed') {
               passedTests++;
-            } else if (result.status === 'skipped') {
+            } else if (lastResult.status === 'skipped') {
               skippedTests++;
             }
 
-            const startTime = new Date(result.startTime);
-            const endTime = new Date(startTime.getTime() + (result.duration || 0));
+            const startTime = new Date(lastResult.startTime);
+            const endTime = new Date(startTime.getTime() + (lastResult.duration || 0));
 
             if (!earliestStartTime || startTime < earliestStartTime) {
               earliestStartTime = startTime;
@@ -56,15 +94,7 @@ const testResultsService = {
             if (!latestEndTime || endTime > latestEndTime) {
               latestEndTime = endTime;
             }
-
-            testDetails.push({
-              title: spec.title,
-              status: isFailed ? 'failed' : result.status,
-              duration: result.duration,
-              startTime: result.startTime,
-              projectName: test.projectName || 'unknown'
-            });
-          });
+          }
         });
       }
     };
@@ -87,7 +117,7 @@ const testResultsService = {
       timestamp: earliestStartTime ? earliestStartTime.toISOString() : new Date().toISOString(),
       totalTests,
       passedTests,
-      failedTests,
+      failedTests: failedTests, // Count of failed tests
       skippedTests,
       totalDuration,
       duration: latestEndTime && earliestStartTime 
@@ -95,7 +125,8 @@ const testResultsService = {
         : totalDuration,
       startTime: earliestStartTime ? earliestStartTime.toISOString() : null,
       endTime: latestEndTime ? latestEndTime.toISOString() : null,
-      testDetails,
+      testDetails: testDetails, // All test details
+      failedTestsDetails: failedTestsList, // Array of failed test details only
       raw: data
     };
   },
@@ -106,18 +137,13 @@ const testResultsService = {
     const history = this.getHistory();
     
     const existingIndex = history.findIndex(run => run.id === results.id);
-    if (existingIndex !== -1) {
-      const existingRunId = history[existingIndex].runId;
-      history.splice(existingIndex, 1);
-      results.runId = existingRunId;
-    } else {
-      results.runId = 1;
-      history.forEach(run => {
-        if (run.runId) run.runId += 1;
-      });
-    }
     
-    history.unshift(results);
+    if (existingIndex === -1) {
+      history.unshift(results);
+    } else {
+      history.splice(existingIndex, 1);
+      history.unshift(results);
+    }
     
     while (history.length > 5) {
       history.pop();
@@ -131,29 +157,53 @@ const testResultsService = {
   },
 
   getHistory() {
-    const stored = localStorage.getItem(TEST_RESULTS_STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
+    try {
+      const stored = localStorage.getItem(TEST_RESULTS_STORAGE_KEY);
+      if (!stored) return [];
+      const history = JSON.parse(stored);
+      return Array.isArray(history) ? history.slice(0, 5) : [];
+    } catch (error) {
+      console.error('Error reading test results history from localStorage:', error);
+      return [];
+    }
   },
 
   async getLatestResults() {
-    const current = await this.getCurrentResults();
-    if (current) {
-      this.archiveCurrentResults(current);
-    }
     const history = this.getHistory();
+    const current = await this.getCurrentResults();
+    
+    if (current) {
+      const existingRun = history.find(run => run.id === current.id);
+      if (!existingRun) {
+        this.archiveCurrentResults(current);
+        return {
+          current: current,
+          history: this.getHistory()
+        };
+      }
+    }
     
     return {
       current: current || null,
-      history: history.slice(0, 5)
+      history: history
     };
   },
 
   async getAllResults() {
     const current = await this.getCurrentResults();
+    let history = this.getHistory();
+    
     if (current) {
-      this.archiveCurrentResults(current);
+      const existingIndex = history.findIndex(run => run.id === current.id);
+      if (existingIndex === -1) {
+        this.archiveCurrentResults(current);
+        history = this.getHistory();
+      } else {
+        history.splice(existingIndex, 1);
+        this.archiveCurrentResults(current);
+        history = this.getHistory();
+      }
     }
-    const history = this.getHistory();
     
     const allResults = [];
     if (current) {
@@ -183,6 +233,119 @@ const testResultsService = {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
     return date.toLocaleString();
+  },
+
+  extractErrorDetails(result, test) {
+    if (!result.error && !test.error) return null;
+
+    const error = result.error || test.error;
+    return {
+      message: error.message || 'Test failed',
+      stack: error.stack || null,
+      value: error.value || null,
+      snippet: error.snippet || null,
+      location: error.location ? {
+        file: error.location.file,
+        line: error.location.line,
+        column: error.location.column
+      } : null
+    };
+  },
+
+  extractAttachments(result, test) {
+    const attachments = [];
+    
+    if (result.attachments) {
+      result.attachments.forEach(attachment => {
+        attachments.push({
+          name: attachment.name,
+          contentType: attachment.contentType,
+          path: attachment.path,
+          body: attachment.body,
+          type: this.getAttachmentType(attachment.name, attachment.contentType)
+        });
+      });
+    }
+
+    if (test.attachments) {
+      test.attachments.forEach(attachment => {
+        attachments.push({
+          name: attachment.name,
+          contentType: attachment.contentType,
+          path: attachment.path,
+          body: attachment.body,
+          type: this.getAttachmentType(attachment.name, attachment.contentType)
+        });
+      });
+    }
+
+    return attachments;
+  },
+
+  getAttachmentType(name, contentType) {
+    if (!name && !contentType) return 'unknown';
+    
+    const nameLower = (name || '').toLowerCase();
+    const contentTypeLower = (contentType || '').toLowerCase();
+
+    if (nameLower.includes('screenshot') || contentTypeLower.includes('image')) {
+      return 'screenshot';
+    }
+    if (nameLower.includes('trace') || contentTypeLower.includes('application')) {
+      return 'trace';
+    }
+    if (nameLower.includes('video') || contentTypeLower.includes('video')) {
+      return 'video';
+    }
+    if (nameLower.includes('har') || contentTypeLower.includes('har')) {
+      return 'har';
+    }
+    return 'other';
+  },
+
+  formatErrorMessage(error) {
+    if (!error) return null;
+    
+    if (error.message) {
+      return this.stripAnsiCodes(error.message);
+    }
+    return 'Test failed without error message';
+  },
+
+  stripAnsiCodes(text) {
+    if (!text) return text;
+    return String(text)
+      .replace(/\x1b\[[0-9;]*m/g, '')
+      .replace(/\x1b\[[0-9;]*[A-Za-z]/g, '')
+      .replace(/\x1b\[2m/g, '')
+      .replace(/\x1b\[22m/g, '')
+      .replace(/\x1b\[31m/g, '')
+      .replace(/\x1b\[39m/g, '')
+      .replace(/\x1b\[36m/g, '')
+      .replace(/\x1b\[33m/g, '')
+      .replace(/\x1b\[35m/g, '')
+      .replace(/\x1b\[32m/g, '')
+      .replace(/\x1b\[90m/g, '')
+      .replace(/\x1b\[0m/g, '')
+      .replace(/\x1b\[1m/g, '')
+      .replace(/\\x1b\[[0-9;]*m/g, '')
+      .replace(/\\x1b\[[0-9;]*[A-Za-z]/g, '')
+      .replace(/\^\x1b\[22m/g, '^')
+      .replace(/\x1b\[22m\^/g, '^')
+      .trim();
+  },
+
+  formatStackTrace(stack) {
+    if (!stack) return null;
+    
+    const lines = stack.split('\n');
+    return lines.slice(0, 10).join('\n');
+  },
+
+  getFileName(filePath) {
+    if (!filePath) return 'Unknown';
+    const parts = filePath.split(/[/\\]/);
+    return parts[parts.length - 1];
   }
 };
 

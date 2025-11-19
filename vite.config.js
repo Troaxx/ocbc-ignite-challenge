@@ -21,8 +21,54 @@ export default defineConfig({
         server.middlewares.use('/test-results', (req, res, next) => {
           try {
             const filePath = resolve(__dirname, 'test-results', req.url.replace(/^\//, ''))
+            const content = readFileSync(filePath)
+            
+            const ext = filePath.split('.').pop().toLowerCase()
+            const contentTypeMap = {
+              'json': 'application/json',
+              'png': 'image/png',
+              'jpg': 'image/jpeg',
+              'jpeg': 'image/jpeg',
+              'gif': 'image/gif',
+              'webp': 'image/webp',
+              'svg': 'image/svg+xml',
+              'mp4': 'video/mp4',
+              'webm': 'video/webm',
+              'zip': 'application/zip',
+              'txt': 'text/plain',
+              'har': 'application/json'
+            }
+            
+            const contentType = contentTypeMap[ext] || 'application/octet-stream'
+            res.setHeader('Content-Type', contentType)
+            
+            if (ext === 'json' || ext === 'txt' || ext === 'har') {
+              res.end(content.toString('utf-8'))
+            } else {
+              res.end(content)
+            }
+          } catch (err) {
+            next()
+          }
+        })
+      }
+    },
+    {
+      name: 'serve-coverage',
+      configureServer(server) {
+        server.middlewares.use('/coverage', (req, res, next) => {
+          try {
+            const filePath = resolve(__dirname, 'coverage', req.url.replace(/^\//, ''))
             const content = readFileSync(filePath, 'utf-8')
-            res.setHeader('Content-Type', 'application/json')
+            
+            if (req.url.endsWith('.info')) {
+              res.setHeader('Content-Type', 'text/plain')
+            } else if (req.url.endsWith('.json')) {
+              res.setHeader('Content-Type', 'application/json')
+            } else {
+              res.setHeader('Content-Type', 'text/html')
+            }
+            
             res.end(content)
           } catch (err) {
             next()

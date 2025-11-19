@@ -21,11 +21,15 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     setError(null);
     if (email && password) {
-      setUser(mockUser);
+      // Set localStorage first to ensure it's available immediately
       localStorage.setItem('ocbc_auth_user', JSON.stringify(mockUser));
+      // Update state - React will batch this update
+      setUser(mockUser);
       return mockUser;
     }
-    setError(new Error("Invalid credentials"));
+    const error = new Error("Invalid credentials");
+    setError(error);
+    throw error;
   };
 
   const logout = async () => {

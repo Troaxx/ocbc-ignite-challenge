@@ -25,6 +25,14 @@ const TransactionsPage = () => {
     setFilteredClients(result);
   }, [searchTerm, filter, clients]);
 
+  // Auto-dismiss error after 5 seconds
+  useEffect(() => {
+    if (actionError) {
+      const timer = setTimeout(() => setActionError(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [actionError]);
+
   const handleCheckboxChange = (e) => {
     const { name } = e.target;
     setFilter(name);
@@ -94,6 +102,7 @@ const TransactionsPage = () => {
           inputLabel={inputLabel}
           buttonLabel={buttonLabel}
           clients={clients}
+          actionError={actionError}
         />
       )}
     </div>

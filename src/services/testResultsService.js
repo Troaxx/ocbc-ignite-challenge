@@ -148,6 +148,10 @@ const testResultsService = {
     while (history.length > 5) {
       history.pop();
     }
+    
+    history.forEach((run, index) => {
+      run.runId = index + 1;
+    });
 
     localStorage.setItem(TEST_RESULTS_STORAGE_KEY, JSON.stringify(history));
   },

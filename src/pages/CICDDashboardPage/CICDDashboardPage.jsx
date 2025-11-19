@@ -112,7 +112,7 @@ const CICDDashboardPage = () => {
 
       {(!results?.history || results.history.length === 0) && (
         <div className="no-results">
-          <p>No test results available. Run tests to see results here.</p>
+          <p>No test results available. Run tests to see results here. TEst</p>
         </div>
       )}
     </div>

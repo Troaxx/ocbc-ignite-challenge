@@ -19,6 +19,9 @@ const CICDDashboardPage = () => {
     try {
       setLoading(true);
       const data = await testResultsService.getAllResults();
+      console.log('Dashboard Results:', data);
+      console.log('History length:', data?.history?.length);
+      console.log('Past runs:', data?.history?.slice(1)?.slice(0, 5));
       setResults(data);
       setError(null);
     } catch (err) {
@@ -66,8 +69,19 @@ const CICDDashboardPage = () => {
       {(() => {
         const history = results?.history || [];
         const allRuns = results?.all || [];
-        const currentRun = history.length > 0 ? history[0] : null;
-        const pastRuns = history.slice(1).slice(0, 5);
+        const currentRun = results?.current || (history.length > 0 ? history[0] : null);
+        const pastRuns = history.length > 1 ? history.slice(1, 6) : [];
+        
+        console.log('=== DASHBOARD DEBUG ===');
+        console.log('Full results object:', results);
+        console.log('History array:', history);
+        console.log('History length:', history.length);
+        console.log('Current run ID:', currentRun?.id);
+        console.log('History[0] ID:', history[0]?.id);
+        console.log('Past runs (slice 1-6):', history.slice(1, 6));
+        console.log('Past runs count:', pastRuns.length);
+        console.log('Past runs:', pastRuns);
+        console.log('Will show past runs section:', pastRuns.length > 0);
 
         return (
           <>

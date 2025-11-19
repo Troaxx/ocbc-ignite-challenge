@@ -135,33 +135,48 @@ const testResultsService = {
     if (!results || !results.id) return;
 
     const history = this.getHistory();
+    console.log('=== ARCHIVE DEBUG ===');
+    console.log('Archiving run with ID:', results.id);
+    console.log('Current history length before archive:', history.length);
+    console.log('Current history IDs:', history.map(r => r.id));
     
     const existingIndex = history.findIndex(run => run.id === results.id);
     
     if (existingIndex === -1) {
+      console.log('Run not found in history, adding new run');
       history.unshift(results);
     } else {
+      console.log(`Run found at index ${existingIndex}, replacing it`);
       history.splice(existingIndex, 1);
       history.unshift(results);
     }
     
     while (history.length > 6) {
-      history.pop();
+      const removed = history.pop();
+      console.log('Removed run from history (over limit):', removed.id);
     }
     
     history.forEach((run, index) => {
       run.runId = index + 1;
     });
 
+    console.log('History length after archive:', history.length);
+    console.log('History IDs after archive:', history.map(r => r.id));
     localStorage.setItem(TEST_RESULTS_STORAGE_KEY, JSON.stringify(history));
+    console.log('Saved to localStorage');
   },
 
   getHistory() {
     try {
       const stored = localStorage.getItem(TEST_RESULTS_STORAGE_KEY);
-      if (!stored) return [];
+      if (!stored) {
+        console.log('No history found in localStorage');
+        return [];
+      }
       const history = JSON.parse(stored);
-      return Array.isArray(history) ? history.slice(0, 6) : [];
+      const result = Array.isArray(history) ? history.slice(0, 6) : [];
+      console.log('Retrieved history from localStorage, length:', result.length);
+      return result;
     } catch (error) {
       console.error('Error reading test results history from localStorage:', error);
       return [];
@@ -190,19 +205,27 @@ const testResultsService = {
   },
 
   async getAllResults() {
+    console.log('=== getAllResults START ===');
     const current = await this.getCurrentResults();
+    console.log('Current run ID:', current?.id);
     let history = this.getHistory();
+    console.log('Initial history length:', history.length);
     
     if (current) {
       const existingIndex = history.findIndex(run => run.id === current.id);
+      console.log('Current run found in history at index:', existingIndex);
+      
       if (existingIndex === -1) {
+        console.log('Current run not in history, archiving it');
         this.archiveCurrentResults(current);
         history = this.getHistory();
       } else {
+        console.log('Current run already in history, re-archiving it');
         history.splice(existingIndex, 1);
         this.archiveCurrentResults(current);
         history = this.getHistory();
       }
+      console.log('History length after archiving:', history.length);
     }
     
     const allResults = [];
@@ -214,11 +237,15 @@ const testResultsService = {
       allResults.push({ ...run, isCurrent: false });
     });
     
-    return {
+    const result = {
       current: current || null,
       history: history.slice(0, 6),
       all: allResults
     };
+    console.log('=== getAllResults END ===');
+    console.log('Returning history length:', result.history.length);
+    console.log('Returning history IDs:', result.history.map(r => r.id));
+    return result;
   },
 
   formatDuration(ms) {

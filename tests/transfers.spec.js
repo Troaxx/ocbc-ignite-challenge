@@ -1,5 +1,5 @@
 // @ts-check
-import { test, expect } from '@playwright/test';
+import { test, expect } from './setup.js';
 
 test.describe('Transaction Tests', () => {
     test.beforeEach(async ({ page }) => {

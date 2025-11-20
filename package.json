@@ -27,7 +27,8 @@
     "react-router": "^6.23.1",
     "react-router-dom": "^6.23.1",
     "react-select": "^5.8.0",
-    "react-toastify": "^10.0.5"
+    "react-toastify": "^10.0.5",
+    "recharts": "^3.4.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",

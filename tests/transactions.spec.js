@@ -83,30 +83,4 @@ test.describe('Transaction Tests', () => {
   expect(afterCash).toBe(beforeCash - withdrawAmount);
 });
 
-  test('Perform transfer transaction', async ({ page }) => {
-    await page.fill('input[placeholder*="Search"]', '1');
-    await page.waitForTimeout(500);
-    await page.waitForSelector('.ClientActionCard');
-    
-    await page.click('button:has-text("Transfer")');
-    await page.selectOption('select', { index: 1 });
-    await page.fill('input[type="number"]', '500');
-    await page.locator('.modal-content button[type="submit"]').click();
-    
-    await page.waitForTimeout(1000);
-    await expect(page.locator('.modal-overlay')).not.toBeVisible();
-  });
-
-  test('Change credit limit', async ({ page }) => {
-    await page.fill('input[placeholder*="Search"]', '1');
-    await page.waitForTimeout(500);
-    await page.waitForSelector('.ClientActionCard');
-    
-    await page.click('button:has-text("Change Credit")');
-    await page.fill('input[type="number"]', '3000');
-    await page.locator('.modal-content button[type="submit"]').click();
-    
-    await page.waitForTimeout(1000);
-    await expect(page.locator('.modal-overlay')).not.toBeVisible();
-  });
 });

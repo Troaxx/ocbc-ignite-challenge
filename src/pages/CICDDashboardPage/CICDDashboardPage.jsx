@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ComposedChart, Area, AreaChart } from 'recharts';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, Label } from 'recharts';
 import testResultsService from '../../services/testResultsService';
 import Loader from '../../components/Loader/Loader';
 import './CICDDashboardPage.css';
@@ -496,17 +496,82 @@ const FailedTestDetail = ({ test, index }) => {
 };
 
 const TestRunGraphs = ({ runs }) => {
-  const prepareChartData = () => {
-    return runs
+  const COLORS = {
+    passed: '#4CAF50',
+    failed: '#F44336',
+    skipped: '#FF9800',
+    error: '#9C27B0'
+  };
+
+  const getBrowserName = (projectName) => {
+    if (!projectName || projectName === 'unknown') return 'Unknown';
+    const name = projectName.toLowerCase();
+    if (name.includes('chromium') || name.includes('chrome')) return 'Chrome';
+    if (name.includes('firefox')) return 'Firefox';
+    if (name.includes('webkit') || name.includes('safari')) return 'Safari';
+    if (name.includes('edge')) return 'Edge';
+    return projectName;
+  };
+
+  const getTestCategory = (filePath) => {
+    if (!filePath) return 'Other';
+    const fileName = filePath.toLowerCase();
+    if (fileName.includes('authentication') || fileName.includes('login')) return 'Authentication';
+    if (fileName.includes('client') || fileName.includes('manage')) return 'Client Management';
+    if (fileName.includes('transaction') || fileName.includes('deposit') || fileName.includes('withdraw')) return 'Transactions';
+    if (fileName.includes('transfer')) return 'Transfers';
+    return 'Other';
+  };
+
+  const prepareExecutionStatusData = () => {
+    let totalPassed = 0;
+    let totalFailed = 0;
+    let totalSkipped = 0;
+    let totalError = 0;
+
+    runs.forEach(run => {
+      totalPassed += run.passedTests || 0;
+      totalFailed += run.failedTests || 0;
+      totalSkipped += run.skippedTests || 0;
+      
+      if (run.testDetails) {
+        run.testDetails.forEach(test => {
+          if (test.status === 'failed' && test.error) {
+            totalError += 1;
+          }
+        });
+      }
+    });
+
+    return [
+      { name: 'Passed', value: totalPassed, color: COLORS.passed },
+      { name: 'Failed', value: totalFailed, color: COLORS.failed },
+      { name: 'Skipped', value: totalSkipped, color: COLORS.skipped },
+      { name: 'Error', value: totalError, color: COLORS.error }
+    ].filter(item => item.value > 0);
+  };
+
+  const prepareDurationTrendData = () => {
+    const browserData = {};
+    
+    runs.forEach(run => {
+      if (!run.testDetails) return;
+      
+      run.testDetails.forEach(test => {
+        const browser = getBrowserName(test.projectName);
+        if (!browserData[browser]) {
+          browserData[browser] = [];
+        }
+        if (test.duration) {
+          browserData[browser].push(test.duration);
+        }
+      });
+    });
+
+    const chartData = runs
       .slice()
       .reverse()
       .map((run, index) => {
-        const passRate = run.totalTests > 0 
-          ? ((run.passedTests / run.totalTests) * 100).toFixed(1) 
-          : 0;
-        const duration = run.duration || run.totalDuration || 0;
-        const durationSeconds = (duration / 1000).toFixed(1);
-        
         const date = run.timestamp || run.startTime;
         const dateObj = date ? new Date(date) : new Date();
         const dateLabel = dateObj.toLocaleDateString('en-US', { 
@@ -516,121 +581,322 @@ const TestRunGraphs = ({ runs }) => {
           minute: '2-digit'
         });
 
+        const runTests = run.testDetails || [];
+        const durations = runTests.map(t => t.duration || 0).filter(d => d > 0);
+        const avgDuration = durations.length > 0 
+          ? durations.reduce((a, b) => a + b, 0) / durations.length 
+          : 0;
+        const minDuration = durations.length > 0 ? Math.min(...durations) : 0;
+        const maxDuration = durations.length > 0 ? Math.max(...durations) : 0;
+        
+        const sortedDurations = [...durations].sort((a, b) => a - b);
+        const p90Index = Math.floor(sortedDurations.length * 0.9);
+        const p90Duration = sortedDurations.length > 0 ? sortedDurations[p90Index] || sortedDurations[sortedDurations.length - 1] : 0;
+
+        const browserAverages = {};
+        ['Chrome', 'Firefox', 'Safari'].forEach(browser => {
+          const browserTests = runTests.filter(t => getBrowserName(t.projectName) === browser);
+          const browserDurations = browserTests.map(t => t.duration || 0).filter(d => d > 0);
+          browserAverages[browser] = browserDurations.length > 0
+            ? browserDurations.reduce((a, b) => a + b, 0) / browserDurations.length
+            : null;
+        });
+
         return {
           name: `Run ${runs.length - index}`,
           date: dateLabel,
-          passRate: parseFloat(passRate),
-          passed: run.passedTests || 0,
-          failed: run.failedTests || 0,
-          skipped: run.skippedTests || 0,
-          total: run.totalTests || 0,
-          duration: parseFloat(durationSeconds),
-          coverage: run.coverage?.overall?.percentage 
-            ? parseFloat(run.coverage.overall.percentage) 
-            : null
+          avgDuration: (avgDuration / 1000).toFixed(1),
+          minDuration: (minDuration / 1000).toFixed(1),
+          maxDuration: (maxDuration / 1000).toFixed(1),
+          p90Duration: (p90Duration / 1000).toFixed(1),
+          chrome: browserAverages.Chrome ? (browserAverages.Chrome / 1000).toFixed(1) : null,
+          firefox: browserAverages.Firefox ? (browserAverages.Firefox / 1000).toFixed(1) : null,
+          safari: browserAverages.Safari ? (browserAverages.Safari / 1000).toFixed(1) : null
         };
       });
+
+    return chartData;
   };
 
-  const chartData = prepareChartData();
-  const hasCoverage = chartData.some(d => d.coverage !== null);
+  const prepareBrowserUtilizationData = () => {
+    const browserStats = {};
+    const concurrentSessions = {};
 
-  if (chartData.length === 0) {
+    runs.forEach(run => {
+      if (!run.testDetails) return;
+      
+      const browserTimestamps = {};
+      
+      run.testDetails.forEach(test => {
+        const browser = getBrowserName(test.projectName);
+        if (!browserStats[browser]) {
+          browserStats[browser] = { tests: 0, sessions: 0 };
+        }
+        browserStats[browser].tests += 1;
+
+        if (test.startTime) {
+          const startTime = new Date(test.startTime).getTime();
+          const endTime = startTime + (test.duration || 0);
+          
+          if (!browserTimestamps[browser]) {
+            browserTimestamps[browser] = [];
+          }
+          browserTimestamps[browser].push({ start: startTime, end: endTime });
+        }
+      });
+
+      Object.keys(browserTimestamps).forEach(browser => {
+        const timestamps = browserTimestamps[browser];
+        let maxConcurrent = 0;
+        
+        const allEvents = [];
+        timestamps.forEach(ts => {
+          allEvents.push({ time: ts.start, type: 'start' });
+          allEvents.push({ time: ts.end, type: 'end' });
+        });
+        
+        allEvents.sort((a, b) => a.time - b.time);
+        
+        let current = 0;
+        allEvents.forEach(event => {
+          if (event.type === 'start') {
+            current++;
+            maxConcurrent = Math.max(maxConcurrent, current);
+          } else {
+            current--;
+          }
+        });
+        
+        if (!concurrentSessions[browser]) {
+          concurrentSessions[browser] = [];
+        }
+        concurrentSessions[browser].push(maxConcurrent);
+      });
+    });
+
+    const chartData = Object.keys(browserStats).map(browser => {
+      const avgConcurrent = concurrentSessions[browser] && concurrentSessions[browser].length > 0
+        ? concurrentSessions[browser].reduce((a, b) => a + b, 0) / concurrentSessions[browser].length
+        : 0;
+      
+      return {
+        browser: browser,
+        tests: browserStats[browser].tests,
+        concurrentSessions: Math.round(avgConcurrent),
+        utilization: Math.min(100, Math.round((avgConcurrent / 4) * 100))
+      };
+    });
+
+    return chartData;
+  };
+
+  const prepareFailureRateData = () => {
+    const browserFailures = {};
+    const categoryFailures = {};
+
+    runs.forEach(run => {
+      if (!run.testDetails) return;
+      
+      run.testDetails.forEach(test => {
+        if (test.status === 'failed') {
+          const browser = getBrowserName(test.projectName);
+          const category = getTestCategory(test.file);
+
+          browserFailures[browser] = (browserFailures[browser] || 0) + 1;
+          categoryFailures[category] = (categoryFailures[category] || 0) + 1;
+        }
+      });
+    });
+
+    const browserData = Object.keys(browserFailures).map(browser => ({
+      name: browser,
+      failures: browserFailures[browser]
+    })).sort((a, b) => b.failures - a.failures);
+
+    const categoryData = Object.keys(categoryFailures).map(category => ({
+      name: category,
+      failures: categoryFailures[category]
+    })).sort((a, b) => b.failures - a.failures);
+
+    const combinedData = [
+      ...browserData.map(item => ({ ...item, type: 'Browser' })),
+      ...categoryData.map(item => ({ ...item, type: 'Category' }))
+    ];
+
+    return { browserData, categoryData, combinedData };
+  };
+
+  const renderCustomLabel = ({ name, value, percent, cx, cy, midAngle, innerRadius, outerRadius }) => {
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+      <text 
+        x={x} 
+        y={y} 
+        fill="#333" 
+        textAnchor={x > cx ? 'start' : 'end'} 
+        dominantBaseline="central"
+        style={{ fontSize: '14px', fontWeight: '600' }}
+      >
+        {`${name}: ${value} (${(percent * 100).toFixed(0)}%)`}
+      </text>
+    );
+  };
+
+  const executionStatusData = prepareExecutionStatusData();
+  const durationTrendData = prepareDurationTrendData();
+  const browserUtilizationData = prepareBrowserUtilizationData();
+  const failureRateData = prepareFailureRateData();
+
+  if (runs.length === 0) {
     return null;
   }
 
   return (
     <>
       <div className="graph-card">
-        <h3 className="graph-title">Pass Rate Over Time</h3>
+        <h3 className="graph-title">Test Execution Status Overview</h3>
         <ResponsiveContainer width="100%" height={250}>
-          <LineChart data={chartData}>
+          <PieChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+            <Pie
+              data={executionStatusData}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              label={renderCustomLabel}
+              outerRadius={75}
+              innerRadius={40}
+              fill="#8884d8"
+              dataKey="value"
+            >
+              {executionStatusData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Pie>
+            <Tooltip contentStyle={{ fontSize: '14px' }} />
+            <Legend wrapperStyle={{ fontSize: '14px' }} />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="graph-card">
+        <h3 className="graph-title">Test Duration Trend</h3>
+        <ResponsiveContainer width="100%" height={250}>
+          <LineChart data={durationTrendData} margin={{ left: 20, right: 20, top: 10, bottom: 10 }}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis domain={[0, 100]} label={{ value: 'Pass Rate (%)', angle: -90, position: 'insideLeft' }} />
-            <Tooltip 
-              formatter={(value) => `${value}%`}
-              labelFormatter={(label) => `Run: ${label}`}
+            <XAxis dataKey="name" tick={{ fontSize: 14 }} />
+            <YAxis 
+              label={{ value: 'Duration (seconds)', angle: -90, position: 'left', style: { fontSize: 14, textAnchor: 'middle' } }} 
+              tick={{ fontSize: 14 }}
+              width={60}
             />
-            <Legend />
+            <Tooltip 
+              formatter={(value) => value !== null ? `${value}s` : 'N/A'}
+              labelFormatter={(label) => `Run: ${label}`}
+              contentStyle={{ fontSize: '14px' }}
+            />
+            <Legend wrapperStyle={{ fontSize: '14px' }} />
             <Line 
               type="monotone" 
-              dataKey="passRate" 
-              stroke="#4CAF50" 
+              dataKey="avgDuration" 
+              stroke="#2196F3" 
               strokeWidth={2}
-              dot={{ fill: '#4CAF50', r: 5 }}
-              name="Pass Rate (%)"
+              dot={{ fill: '#2196F3', r: 4 }}
+              name="Average Duration"
+            />
+            <Line 
+              type="monotone" 
+              dataKey="p90Duration" 
+              stroke="#FF9800" 
+              strokeWidth={2}
+              strokeDasharray="5 5"
+              dot={{ fill: '#FF9800', r: 4 }}
+              name="P90 Duration"
+            />
+            <Line 
+              type="monotone" 
+              dataKey="chrome" 
+              stroke="#4285F4" 
+              strokeWidth={1.5}
+              dot={{ fill: '#4285F4', r: 3 }}
+              name="Chrome Avg"
+              connectNulls={false}
+            />
+            <Line 
+              type="monotone" 
+              dataKey="firefox" 
+              stroke="#FF7139" 
+              strokeWidth={1.5}
+              dot={{ fill: '#FF7139', r: 3 }}
+              name="Firefox Avg"
+              connectNulls={false}
+            />
+            <Line 
+              type="monotone" 
+              dataKey="safari" 
+              stroke="#000000" 
+              strokeWidth={1.5}
+              dot={{ fill: '#000000', r: 3 }}
+              name="Safari Avg"
+              connectNulls={false}
             />
           </LineChart>
         </ResponsiveContainer>
       </div>
 
       <div className="graph-card">
-        <h3 className="graph-title">Test Results Distribution</h3>
+        <h3 className="graph-title">Browser Utilization / Parallel Execution</h3>
         <ResponsiveContainer width="100%" height={250}>
-          <BarChart data={chartData}>
+          <BarChart data={browserUtilizationData} margin={{ left: 20, right: 20, top: 10, bottom: 10 }}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis label={{ value: 'Number of Tests', angle: -90, position: 'insideLeft' }} />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="passed" stackId="a" fill="#4CAF50" name="Passed" />
-            <Bar dataKey="failed" stackId="a" fill="#F44336" name="Failed" />
-            <Bar dataKey="skipped" stackId="a" fill="#FF9800" name="Skipped" />
+            <XAxis dataKey="browser" tick={{ fontSize: 14 }} />
+            <YAxis 
+              label={{ value: 'Count', angle: -90, position: 'left', style: { fontSize: 14, textAnchor: 'middle' } }} 
+              tick={{ fontSize: 14 }}
+              width={60}
+            />
+            <Tooltip contentStyle={{ fontSize: '14px' }} />
+            <Legend wrapperStyle={{ fontSize: '14px' }} />
+            <Bar dataKey="tests" fill="#4CAF50" name="Tests Executed" />
+            <Bar dataKey="concurrentSessions" fill="#2196F3" name="Concurrent Sessions" />
+            <Bar dataKey="utilization" fill="#FF9800" name="Utilization %" />
           </BarChart>
         </ResponsiveContainer>
       </div>
 
       <div className="graph-card">
-        <h3 className="graph-title">Test Duration Over Time</h3>
+        <h3 className="graph-title">Failure Rate by Browser or Test Category</h3>
         <ResponsiveContainer width="100%" height={250}>
-          <AreaChart data={chartData}>
+          <BarChart data={failureRateData.combinedData} margin={{ left: 20, right: 20, top: 30, bottom: 60 }}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis label={{ value: 'Duration (seconds)', angle: -90, position: 'insideLeft' }} />
-            <Tooltip 
-              formatter={(value) => `${value}s`}
-              labelFormatter={(label) => `Run: ${label}`}
+            <XAxis 
+              dataKey="name" 
+              angle={-45} 
+              textAnchor="end" 
+              height={80} 
+              tick={{ fontSize: 14 }} 
             />
-            <Legend />
-            <Area 
-              type="monotone" 
-              dataKey="duration" 
-              stroke="#2196F3" 
-              fill="#2196F3" 
-              fillOpacity={0.6}
-              name="Duration (s)"
-            />
-          </AreaChart>
+            <YAxis 
+              tick={{ fontSize: 14 }}
+              width={70}
+            >
+              <Label 
+                value="Number of Failures"
+                angle={-90}
+                position="insideLeft"
+                style={{ fontSize: 14, textAnchor: 'middle' }}
+                offset={-15}
+              />
+            </YAxis>
+            <Tooltip contentStyle={{ fontSize: '14px' }} />
+            <Legend wrapperStyle={{ fontSize: '14px' }} />
+            <Bar dataKey="failures" fill="#F44336" name="Failures" />
+          </BarChart>
         </ResponsiveContainer>
       </div>
-
-      {hasCoverage && (
-        <div className="graph-card">
-          <h3 className="graph-title">Code Coverage Over Time</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis domain={[0, 100]} label={{ value: 'Coverage (%)', angle: -90, position: 'insideLeft' }} />
-              <Tooltip 
-                formatter={(value) => value !== null ? `${value}%` : 'N/A'}
-                labelFormatter={(label) => `Run: ${label}`}
-              />
-              <Legend />
-              <Line 
-                type="monotone" 
-                dataKey="coverage" 
-                stroke="#9C27B0" 
-                strokeWidth={2}
-                dot={{ fill: '#9C27B0', r: 5 }}
-                name="Coverage (%)"
-                connectNulls={false}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      )}
     </>
   );
 };

@@ -1475,3 +1475,20 @@
   }
 }
 
+.recharts-pie-label-text {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+
+.recharts-legend-item-text {
+  font-size: 14px !important;
+}
+
+.recharts-tooltip-label {
+  font-size: 14px !important;
+}
+
+.recharts-tooltip-item {
+  font-size: 14px !important;
+}
+

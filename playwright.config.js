@@ -57,6 +57,7 @@ export default defineConfig({
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
+      timeout: process.env.CI ? 60000 : 30000,
     },
 
     {

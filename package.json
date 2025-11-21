@@ -16,7 +16,7 @@
     "test:webkit": "playwright test --project=webkit",
     "test:debug": "playwright test --debug",
     "test:report": "playwright show-report",
-    "coverage:report": "nyc report --reporter=html --reporter=text --reporter=lcov",
+    "coverage:report": "npx nyc report --reporter=html --reporter=text --reporter=lcov",
     "coverage:view": "open coverage/index.html"
   },
   "dependencies": {

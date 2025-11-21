@@ -311,7 +311,7 @@
 }
 
 .coverage-label {
-  font-size: 1rem;
+  font-size: 1.15rem;
   color: #666;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -319,7 +319,7 @@
 }
 
 .coverage-value {
-  font-size: 1.8rem;
+  font-size: 2.3rem;
   color: #2196F3;
   font-weight: 700;
 }
@@ -331,9 +331,9 @@
 }
 
 .coverage-detail {
-  font-size: 0.9rem;
-  color: #666;
-  font-weight: 500;
+  font-size: 1.05rem;
+  color: #4a4a4a;
+  font-weight: 600;
 }
 
 .warning-banner {

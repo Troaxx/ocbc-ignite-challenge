@@ -60,7 +60,7 @@
                     </tr>
                     <tr>
                         <td>Duration:</td>
-                        <td>$BUILD_DURATION</td>
+                        <td>${BUILD_DURATION}</td>
                     </tr>
                     <tr>
                         <td>Triggered By:</td>
@@ -164,7 +164,7 @@
                     </tr>
                     <tr>
                         <td>Duration:</td>
-                        <td>$BUILD_DURATION</td>
+                        <td>${BUILD_DURATION}</td>
                     </tr>
                     <tr>
                         <td>Triggered By:</td>

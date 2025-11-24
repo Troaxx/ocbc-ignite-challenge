@@ -36,3 +36,10 @@ coverage
 
 # Playwright
 /playwright/.auth/
+
+#Jenkins
+Jenkinsfile
+JENKINS_DASHBOARD_INTEGRATION.md
+JENKINS_FREESTYLE_SETUP.md
+JENKINS_QUICK_SETUP.md
+JENKINS_SETUP.md

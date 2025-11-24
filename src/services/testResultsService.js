@@ -1,18 +1,63 @@
 const TEST_RESULTS_STORAGE_KEY = 'ocbc_test_results_history';
 
 const testResultsService = {
+  getJenkinsConfig() {
+    const jenkinsUrl = import.meta.env.VITE_JENKINS_URL;
+    const jenkinsJobName = import.meta.env.VITE_JENKINS_JOB_NAME;
+    const jenkinsBuildNumber = import.meta.env.VITE_JENKINS_BUILD_NUMBER;
+    
+    if (!jenkinsUrl || !jenkinsJobName) {
+      return null;
+    }
+    
+    const buildPath = jenkinsBuildNumber 
+      ? `${jenkinsBuildNumber}` 
+      : 'lastCompletedBuild';
+    
+    return {
+      url: jenkinsUrl.replace(/\/$/, ''),
+      jobName: jenkinsJobName,
+      buildPath: buildPath,
+      resultsUrl: `${jenkinsUrl.replace(/\/$/, '')}/job/${jenkinsJobName}/${buildPath}/artifact/test-results/results.json`,
+      coverageUrl: `${jenkinsUrl.replace(/\/$/, '')}/job/${jenkinsJobName}/${buildPath}/artifact/coverage/lcov.info`
+    };
+  },
+
   async getCurrentResults() {
     try {
-      const response = await fetch('/test-results/results.json');
+      const jenkinsConfig = this.getJenkinsConfig();
+      let resultsUrl = '/test-results/results.json';
+      
+      if (jenkinsConfig) {
+        resultsUrl = jenkinsConfig.resultsUrl;
+        console.log('Fetching test results from Jenkins:', resultsUrl);
+      }
+      
+      const response = await fetch(resultsUrl);
       if (!response.ok) {
-        throw new Error('Failed to fetch test results');
+        throw new Error(`Failed to fetch test results: ${response.status} ${response.statusText}`);
       }
       const data = await response.json();
       const testResults = this.parseTestResults(data);
       
-      // Dynamically import coverage service to avoid circular dependencies
       const coverageServiceModule = await import('./coverageService.js');
-      const coverageData = await coverageServiceModule.default.getCoverageData();
+      let coverageData = null;
+      
+      if (jenkinsConfig) {
+        try {
+          const coverageResponse = await fetch(jenkinsConfig.coverageUrl);
+          if (coverageResponse.ok) {
+            const lcovData = await coverageResponse.text();
+            coverageData = coverageServiceModule.default.parseLcovData(lcovData);
+          }
+        } catch (coverageError) {
+          console.warn('Could not fetch coverage from Jenkins, trying local:', coverageError);
+          coverageData = await coverageServiceModule.default.getCoverageData();
+        }
+      } else {
+        coverageData = await coverageServiceModule.default.getCoverageData();
+      }
+      
       if (coverageData) {
         testResults.coverage = coverageData;
       }

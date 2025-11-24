@@ -70,7 +70,7 @@ const CICDDashboardPage = () => {
         const history = results?.history || [];
         const allRuns = results?.all || [];
         const currentRun = results?.current || (history.length > 0 ? history[0] : null);
-        const pastRuns = history.length > 1 ? history.slice(1, 6) : [];
+        const pastRuns = history.slice(0, 5);
         
         console.log('=== DASHBOARD DEBUG ===');
         console.log('Full results object:', results);
@@ -442,16 +442,19 @@ const FailedTestDetail = ({ test, index }) => {
                           src={attachment.body 
                             ? `data:${attachment.contentType || 'image/png'};base64,${attachment.body}` 
                             : attachment.path 
-                              ? attachment.path.startsWith('/') 
-                                ? attachment.path 
-                                : `/test-results/${attachment.path.split(/[\\\/]/).pop()}`
+                              ? attachment.path.startsWith('http://') || attachment.path.startsWith('https://')
+                                ? attachment.path
+                                : attachment.path.startsWith('/') 
+                                  ? attachment.path 
+                                  : `/test-results/${attachment.path.split(/[\\\/]/).pop()}`
                               : ''} 
                           alt={attachment.name || 'Screenshot'} 
                           className="screenshot-image"
                           onError={(e) => {
+                            console.error('Failed to load screenshot:', attachment.path);
                             const parent = e.target.parentElement;
                             if (parent) {
-                              parent.innerHTML = `<div class="screenshot-error">Failed to load screenshot: ${attachment.name || 'Screenshot'}</div>`;
+                              parent.innerHTML = `<div class="screenshot-error">Failed to load screenshot: ${attachment.name || 'Screenshot'}<br/><small>${attachment.path || ''}</small></div>`;
                             }
                           }}
                         />

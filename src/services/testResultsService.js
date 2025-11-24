@@ -6,38 +6,55 @@ const testResultsService = {
     const jenkinsJobName = import.meta.env.VITE_JENKINS_JOB_NAME;
     const jenkinsBuildNumber = import.meta.env.VITE_JENKINS_BUILD_NUMBER;
     
+    console.log('Jenkins Config Check:', {
+      jenkinsUrl,
+      jenkinsJobName,
+      jenkinsBuildNumber,
+      hasUrl: !!jenkinsUrl,
+      hasJobName: !!jenkinsJobName
+    });
+    
     if (!jenkinsUrl || !jenkinsJobName) {
+      console.log('Jenkins config not found - will use local files');
       return null;
     }
     
-    const buildPath = jenkinsBuildNumber 
+    const buildPath = jenkinsBuildNumber && jenkinsBuildNumber !== 'lastCompletedBuild'
       ? `${jenkinsBuildNumber}` 
       : 'lastCompletedBuild';
     
-    return {
+    const config = {
       url: jenkinsUrl.replace(/\/$/, ''),
       jobName: jenkinsJobName,
       buildPath: buildPath,
       resultsUrl: `${jenkinsUrl.replace(/\/$/, '')}/job/${jenkinsJobName}/${buildPath}/artifact/test-results/results.json`,
       coverageUrl: `${jenkinsUrl.replace(/\/$/, '')}/job/${jenkinsJobName}/${buildPath}/artifact/coverage/lcov.info`
     };
+    
+    console.log('Jenkins config loaded:', config);
+    return config;
   },
 
   async getCurrentResults() {
     try {
       const jenkinsConfig = this.getJenkinsConfig();
       let resultsUrl = '/test-results/results.json';
+      let source = 'local';
       
       if (jenkinsConfig) {
         resultsUrl = jenkinsConfig.resultsUrl;
+        source = 'Jenkins';
         console.log('Fetching test results from Jenkins:', resultsUrl);
+      } else {
+        console.log('Fetching test results from local file:', resultsUrl);
       }
       
       const response = await fetch(resultsUrl);
       if (!response.ok) {
-        throw new Error(`Failed to fetch test results: ${response.status} ${response.statusText}`);
+        throw new Error(`Failed to fetch test results from ${source}: ${response.status} ${response.statusText}`);
       }
       const data = await response.json();
+      console.log(`✅ Successfully fetched results from ${source}`);
       const testResults = this.parseTestResults(data);
       
       const coverageServiceModule = await import('./coverageService.js');

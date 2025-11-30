@@ -1,18 +1,102 @@
 const TEST_RESULTS_STORAGE_KEY = 'ocbc_test_results_history';
 
 const testResultsService = {
+  getJenkinsConfig() {
+    const jenkinsUrl = import.meta.env.VITE_JENKINS_URL;
+    const jenkinsJobName = import.meta.env.VITE_JENKINS_JOB_NAME;
+    const jenkinsBuildNumber = import.meta.env.VITE_JENKINS_BUILD_NUMBER;
+    
+    console.log('Jenkins Config Check:', {
+      jenkinsUrl,
+      jenkinsJobName,
+      jenkinsBuildNumber,
+      hasUrl: !!jenkinsUrl,
+      hasJobName: !!jenkinsJobName
+    });
+    
+    if (!jenkinsUrl || !jenkinsJobName) {
+      console.log('Jenkins config not found - will use local files');
+      return null;
+    }
+    
+    const buildPath = jenkinsBuildNumber && jenkinsBuildNumber !== 'lastCompletedBuild'
+      ? `${jenkinsBuildNumber}` 
+      : 'lastCompletedBuild';
+    
+    const config = {
+      url: jenkinsUrl.replace(/\/$/, ''),
+      jobName: jenkinsJobName,
+      buildPath: buildPath,
+      resultsUrl: `${jenkinsUrl.replace(/\/$/, '')}/job/${jenkinsJobName}/${buildPath}/artifact/test-results/results.json`,
+      coverageUrl: `${jenkinsUrl.replace(/\/$/, '')}/job/${jenkinsJobName}/${buildPath}/artifact/coverage/lcov.info`
+    };
+    
+    console.log('Jenkins config loaded:', config);
+    return config;
+  },
+
   async getCurrentResults() {
     try {
-      const response = await fetch('/test-results/results.json');
+      const jenkinsConfig = this.getJenkinsConfig();
+      let resultsUrl = '/test-results/results.json';
+      let source = 'local';
+      
+      if (jenkinsConfig) {
+        resultsUrl = jenkinsConfig.resultsUrl;
+        source = 'Jenkins';
+        console.log('Fetching test results from Jenkins:', resultsUrl);
+      } else {
+        console.log('Fetching test results from local file:', resultsUrl);
+      }
+      
+      const jenkinsToken = import.meta.env.VITE_JENKINS_TOKEN;
+      const jenkinsUser = import.meta.env.VITE_JENKINS_USER;
+      
+      const fetchOptions = {};
+      if (jenkinsToken && jenkinsUser) {
+        const credentials = btoa(`${jenkinsUser}:${jenkinsToken}`);
+        fetchOptions.headers = {
+          'Authorization': `Basic ${credentials}`
+        };
+      }
+      
+      const response = await fetch(resultsUrl, fetchOptions);
       if (!response.ok) {
-        throw new Error('Failed to fetch test results');
+        throw new Error(`Failed to fetch test results from ${source}: ${response.status} ${response.statusText}`);
       }
       const data = await response.json();
-      const testResults = this.parseTestResults(data);
+      console.log(`✅ Successfully fetched results from ${source}`);
+      const testResults = this.parseTestResults(data, jenkinsConfig);
       
-      // Dynamically import coverage service to avoid circular dependencies
       const coverageServiceModule = await import('./coverageService.js');
-      const coverageData = await coverageServiceModule.default.getCoverageData();
+      let coverageData = null;
+      
+      if (jenkinsConfig) {
+        try {
+          const jenkinsToken = import.meta.env.VITE_JENKINS_TOKEN;
+          const jenkinsUser = import.meta.env.VITE_JENKINS_USER;
+          
+          const fetchOptions = {};
+          if (jenkinsToken && jenkinsUser) {
+            const credentials = btoa(`${jenkinsUser}:${jenkinsToken}`);
+            fetchOptions.headers = {
+              'Authorization': `Basic ${credentials}`
+            };
+          }
+          
+          const coverageResponse = await fetch(jenkinsConfig.coverageUrl, fetchOptions);
+          if (coverageResponse.ok) {
+            const lcovData = await coverageResponse.text();
+            coverageData = coverageServiceModule.default.parseLcovData(lcovData);
+          }
+        } catch (coverageError) {
+          console.warn('Could not fetch coverage from Jenkins, trying local:', coverageError);
+          coverageData = await coverageServiceModule.default.getCoverageData();
+        }
+      } else {
+        coverageData = await coverageServiceModule.default.getCoverageData();
+      }
+      
       if (coverageData) {
         testResults.coverage = coverageData;
       }
@@ -24,7 +108,7 @@ const testResultsService = {
     }
   },
 
-  parseTestResults(data) {
+  parseTestResults(data, jenkinsConfig = null) {
     let totalTests = 0;
     let passedTests = 0;
     let failedTests = 0;
@@ -54,7 +138,7 @@ const testResultsService = {
             const isFailed = testIsFailed || resultIsFailed;
             
             const errorDetails = this.extractErrorDetails(lastResult, test);
-            const attachments = this.extractAttachments(lastResult, test);
+            const attachments = this.extractAttachments(lastResult, test, jenkinsConfig);
             
             const testDetail = {
               title: test.title || spec.title || 'Unknown Test',
@@ -204,42 +288,111 @@ const testResultsService = {
     };
   },
 
+  async fetchJenkinsBuildHistory(jenkinsConfig, count = 5) {
+    if (!jenkinsConfig) return [];
+    
+    const history = [];
+    const jenkinsToken = import.meta.env.VITE_JENKINS_TOKEN;
+    const jenkinsUser = import.meta.env.VITE_JENKINS_USER;
+    
+    const fetchOptions = {};
+    if (jenkinsToken && jenkinsUser) {
+      const credentials = btoa(`${jenkinsUser}:${jenkinsToken}`);
+      fetchOptions.headers = {
+        'Authorization': `Basic ${credentials}`
+      };
+    }
+    
+    try {
+      const apiUrl = `${jenkinsConfig.url}/job/${jenkinsConfig.jobName}/api/json?tree=builds[number,result,url]&depth=1`;
+      const apiResponse = await fetch(apiUrl, fetchOptions);
+      
+      if (apiResponse.ok) {
+        const buildData = await apiResponse.json();
+        const builds = (buildData.builds || [])
+          .filter(build => build.result === 'SUCCESS' || build.result === 'FAILURE' || build.result === 'UNSTABLE')
+          .slice(0, count * 2);
+        
+        for (const build of builds) {
+          if (history.length >= count) break;
+          
+          const resultsUrl = `${build.url}artifact/test-results/results.json`;
+          
+          try {
+            const response = await fetch(resultsUrl, fetchOptions);
+            if (response.ok) {
+              const data = await response.json();
+              const jenkinsConfigForBuild = {
+                ...jenkinsConfig,
+                buildPath: build.number.toString()
+              };
+              const testResults = this.parseTestResults(data, jenkinsConfigForBuild);
+              if (testResults && testResults.id) {
+                history.push(testResults);
+              }
+            }
+          } catch (error) {
+            console.warn(`Failed to fetch results for build ${build.number}:`, error);
+          }
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to fetch build history from Jenkins API:', error);
+    }
+    
+    return history;
+  },
+
   async getAllResults() {
     console.log('=== getAllResults START ===');
-    const current = await this.getCurrentResults();
-    console.log('Current run ID:', current?.id);
-    let history = this.getHistory();
-    console.log('Initial history length:', history.length);
+    const jenkinsConfig = this.getJenkinsConfig();
+    let current = null;
+    let history = [];
     
-    if (current) {
-      const existingIndex = history.findIndex(run => run.id === current.id);
-      console.log('Current run found in history at index:', existingIndex);
+    if (jenkinsConfig) {
+      console.log('Fetching from Jenkins - current build and history');
+      current = await this.getCurrentResults();
       
-      if (existingIndex === -1) {
-        console.log('Current run not in history, archiving it');
-        this.archiveCurrentResults(current);
-        history = this.getHistory();
+      const jenkinsHistory = await this.fetchJenkinsBuildHistory(jenkinsConfig, 6);
+      
+      if (current) {
+        history = jenkinsHistory.filter(run => run.id !== current.id).slice(0, 5);
       } else {
-        console.log('Current run already in history, re-archiving it');
-        history.splice(existingIndex, 1);
-        this.archiveCurrentResults(current);
-        history = this.getHistory();
+        history = jenkinsHistory.slice(0, 5);
       }
-      console.log('History length after archiving:', history.length);
+    } else {
+      current = await this.getCurrentResults();
+      history = this.getHistory();
+      
+      if (current) {
+        const existingIndex = history.findIndex(run => run.id === current.id);
+        
+        if (existingIndex === -1) {
+          this.archiveCurrentResults(current);
+          history = this.getHistory();
+        } else {
+          history.splice(existingIndex, 1);
+          this.archiveCurrentResults(current);
+          history = this.getHistory();
+        }
+      }
     }
+    
+    console.log('Current run ID:', current?.id);
+    console.log('History length:', history.length);
     
     const allResults = [];
     if (current) {
       allResults.push({ ...current, isCurrent: true });
     }
     
-    history.slice(0, 6).forEach(run => {
+    history.slice(0, 5).forEach(run => {
       allResults.push({ ...run, isCurrent: false });
     });
     
     const result = {
       current: current || null,
-      history: history.slice(0, 6),
+      history: history.slice(0, 5),
       all: allResults
     };
     console.log('=== getAllResults END ===');
@@ -279,30 +432,55 @@ const testResultsService = {
     };
   },
 
-  extractAttachments(result, test) {
+  extractAttachments(result, test, jenkinsConfig = null) {
     const attachments = [];
+    
+    const processAttachment = (attachment) => {
+      let attachmentPath = attachment.path;
+      
+      if (jenkinsConfig && attachmentPath && !attachmentPath.startsWith('http')) {
+        let relativePath = attachmentPath.replace(/\\/g, '/');
+        
+        const workspacePattern = /workspace[\/\\][^\/\\]+[\/\\]/i;
+        const workspaceMatch = relativePath.match(workspacePattern);
+        
+        if (workspaceMatch) {
+          relativePath = relativePath.substring(workspaceMatch.index + workspaceMatch[0].length);
+        } else {
+          const testResultsIndex = relativePath.indexOf('test-results/');
+          if (testResultsIndex !== -1) {
+            relativePath = relativePath.substring(testResultsIndex);
+          } else {
+            const coverageIndex = relativePath.indexOf('coverage/');
+            if (coverageIndex !== -1) {
+              relativePath = relativePath.substring(coverageIndex);
+            }
+          }
+        }
+        
+        relativePath = relativePath.replace(/^[\/\\]/, '');
+        
+        attachmentPath = `${jenkinsConfig.url}/job/${jenkinsConfig.jobName}/${jenkinsConfig.buildPath}/artifact/${relativePath}`;
+      }
+      
+      return {
+        name: attachment.name,
+        contentType: attachment.contentType,
+        path: attachmentPath,
+        body: attachment.body,
+        type: this.getAttachmentType(attachment.name, attachment.contentType)
+      };
+    };
     
     if (result.attachments) {
       result.attachments.forEach(attachment => {
-        attachments.push({
-          name: attachment.name,
-          contentType: attachment.contentType,
-          path: attachment.path,
-          body: attachment.body,
-          type: this.getAttachmentType(attachment.name, attachment.contentType)
-        });
+        attachments.push(processAttachment(attachment));
       });
     }
 
     if (test.attachments) {
       test.attachments.forEach(attachment => {
-        attachments.push({
-          name: attachment.name,
-          contentType: attachment.contentType,
-          path: attachment.path,
-          body: attachment.body,
-          type: this.getAttachmentType(attachment.name, attachment.contentType)
-        });
+        attachments.push(processAttachment(attachment));
       });
     }
 

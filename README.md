@@ -1,10 +1,28 @@
-# Bank Manager Application 
-<img src="/public/assets/images/dy-bank-high-resolution-logo-black-transparent.png" alt="App Icon" width="160" height="100">
+# Bank Manager Application
 
-| Username | Password    |
+**Forked from [DanielYehezkely/bank-management-react](https://github.com/DanielYehezkely/bank-management-react) for the OCBC Ignite Challenge.**
+
+
+## Problem Statement
+
+**Enable cross platform browsers automation**
+
+With the growing number of applications in the bank, the test cases will increase. How do we develop a scalable and user-friendly platform to run these test cases automatically without users’ manual intervention?
+
+## Changes Made for OCBC Ignite Challenge
+
+To address the problem statement and enhance the application for the hackathon, the following changes were implemented:
+
+- **UI/UX Improvements**: Overhauled the user interface to align with OCBC's corporate design identity, creating a more professional, readable, and intuitive experience for bank administrators.
+- **Backend Transformation**: Migrated the data persistence layer from Firebase to a local JSON file structure. This ensures data validity and stability for the prototype demonstration, removing external dependencies for the hackathon context.
+
+## Login Credentials
+
+Please use the following credentials to access the application:
+
+| Username | Password |
 | -------- | ----------- |
-| eladtester@test.test    | elad12345678   |
-
+| eladtester@test.test | elad12345678 |
 
 ## Table of Contents
 
@@ -12,190 +30,140 @@
 2. [Features](#features)
 3. [Tech Stack](#tech-stack)
 4. [Setup and Installation](#setup-and-installation)
-5. [Usage](#usage)
-6. [Environment Variables](#environment-variables)
-7. [Advanced Features](#advanced-features)
-8. [Challenges Faced](#challenges-faced)
-9. [Known Bugs](#known-bugs)
-10. [Future Improvements](#future-improvements)
-11. [Links](#links)
-12. [Screenshots](#screenshots)
+5. [Testing](#testing)
+6. [CI/CD Pipeline](#cicd-pipeline)
+7. [Environment Variables](#environment-variables)
+8. [Screenshots](#screenshots)
 
 ## Overview
 
-The Bank Manager Application is a robust, web-based platform designed for bank administrators to efficiently manage their clients and handle various banking transactions. This application is built using React and Firebase, offering a secure and streamlined experience for banking operations.
+The Bank Manager Application is a web-based platform designed for bank administrators to efficiently manage clients and handle banking transactions. It provides a streamlined interface for operations such as client onboarding, fund transfers, and credit management.
 
 ## Features
 
-### Core Functionality:
-1. **Admin Authentication**
-   - Secure Firebase authentication for admin login, ensuring only authorized access to client management features.
-
-2. **Client Management**
-   - Admins can add, edit, and delete client information with ease, maintaining a comprehensive database of bank clients.
-
-3. **Transaction Management**
-   - Perform essential banking transactions:
-     - **Withdrawals**: Admins can withdraw money from client accounts.
-     - **Deposits**: Deposit cash into client accounts.
-     - **Transfers**: Transfer funds between client accounts.
-     - **Credit Management**: Adjust the credit limits for clients.
-
-4. **Routing and Navigation**
-   - Smooth navigation across various sections of the application, including client list, transaction management, and account details.
-
-### Enhanced Features:
-1. **Form Validation and Error Handling**
-   - Strong validation mechanisms on all forms to ensure accurate data entry and provide real-time feedback.
-
-2. **Real-time Data Updates**
-   - Instant updates to client information and transaction records using Firebase's real-time database.
-
-3. **Loading Indicators and Notifications**
-   - Use of loaders to enhance user experience during data operations.
-   - Toastify notifications for actions like form submissions, CRUD operations, and error messages.
+- **Admin Authentication**: Secure login system for authorized access.
+- **Client Management**: Comprehensive tools to add, edit, and remove client records.
+- **Transaction Processing**:
+    - Withdrawals and Deposits
+    - Fund Transfers between accounts
+    - Credit Limit adjustments
+- **Real-time Feedback**: Instant form validation and user notifications for all actions.
 
 ## Tech Stack
 
-- **Frontend**: React, JSX, HTML, CSS, JavaScript
-- **Libraries**: Firebase, React Router, React Icons, React Select, React Toastify
-- **State Management**: React State and Context API
-- **Backend**: Firebase for authentication and real-time data storage
+- **Frontend**: React, JSX, CSS (Vanilla)
+- **State Management**: React Context API
+- **Testing**: Playwright, Istanbul (nyc)
+- **CI/CD**: Jenkins
 
 ## Setup and Installation
 
-To set up and run the project locally, follow these steps:
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/Troaxx/ocbc-ignite-challenge.git
+   cd ocbc-ignite-challenge
+   ```
 
-1. **Clone the repository from GitHub**:
-   - `git clone https://github.com/DanielYehezkely/bank-management-react`
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-2. **Navigate to the project directory**:
-   - `cd bank-manager`
+3. **Configure Environment**:
+   Create a `.env` file in the root directory and add the required variables (see [Environment Variables](#environment-variables)).
 
-3. **Install the necessary dependencies**:
-   - `npm install`
+4. **Start the application**:
+   ```bash
+   npm start
+   ```
 
-4. **Set up Firebase configuration**:
-   - Create a `.env` file in the root directory.
-   - Add your Firebase configuration variables (see [Environment Variables](#environment-variables)).
+## Testing
 
-5. **Start the development server**:
-   - `npm start`
+A key focus of this project is robust, automated cross-browser testing.
 
-6. **Open the app in your web browser**:
-   - Visit `http://localhost:3000`
+### Methodology
+- **Playwright**: Utilized for End-to-End (E2E) testing. It allows us to automate interactions across Chromium, Firefox, and WebKit engines, ensuring the application works consistently for all users.
+- **Istanbul (nyc)**: Integrated to track code coverage. This ensures that our tests are not just running, but actually exercising the critical logic of the application.
 
-## Usage
+### Test Suite
 
-1. **Admin Login**:
-   - Access the admin login page.
-   - Enter your credentials to log in and access the management dashboard.
+| Test File | Description |
+| --------- | ----------- |
+| `authentication.spec.js` | Verifies login functionality, including valid/invalid credential handling. |
+| `client-management.spec.js` | Tests the complete client lifecycle: Create, Read, Update, Delete (CRUD). |
+| `transactions.spec.js` | Validates core banking operations: Deposits, Withdrawals, and Credit updates. |
+| `transfers.spec.js` | Ensures accuracy and integrity of fund transfers between accounts. |
+| `demo-failure.spec.js` | **Demo Only**: Intentionally fails to demonstrate the CI/CD pipeline's error reporting capabilities. |
 
-2. **Managing Clients**:
-   - View a list of all clients in the bank.
-   - Add new clients, edit existing client details, or delete clients as needed.
+### Running Tests
 
-3. **Performing Transactions**:
-   - Navigate to the transactions page to withdraw, deposit, transfer funds, or change the credit limit for a client.
+```bash
+# Run the full test suite (headless)
+npm test
+
+# Run tests with interactive UI
+npm run test:ui
+
+# View coverage report
+npm run coverage:report
+```
+
+## CI/CD Pipeline
+
+This project features a fully automated CI/CD pipeline powered by **Jenkins**.
+
+1. **Trigger**: Pushes to the `main` branch automatically trigger a new build job.
+2. **Test Execution**: Jenkins checks out the code, installs dependencies, and runs the Playwright test suite.
+3. **Reporting**:
+    - **Success**: If all tests pass, a success email is sent.
+    - **Failure**: If any test fails (e.g., `demo-failure.spec.js`), a failure notification is sent immediately.
+4. **Dashboard**: A centralized dashboard visualizes build status and test results.
 
 ## Environment Variables
 
-The application requires a `.env` file to store environment-specific configurations.
+Create a `.env` file with the following configuration:
 
-1. **Create a `.env` file**:
-   - Copy the provided `.env.template` file to `.env`:
-     - `cp .env.template .env`
+```env
+VITE_ADMIN_EMAIL="eladtester@test.test"
+VITE_ADMIN_PASSWORD="elad12345678"
 
-2. **Edit the `.env` file**:
-   - Fill in the required environment variables. Below are examples of variables you might need:
-     ```
-     VITE_API_KEY=YOUR_FIREBASE_API_KEY
-     VITE_AUTH_DOMAIN=YOUR_FIREBASE_AUTH_DOMAIN
-     VITE_PROJECT_ID=YOUR_FIREBASE_PROJECT_ID
-     VITE_STORAGE_BUCKET=YOUR_FIREBASE_STORAGE_BUCKET
-     VITE_MESSAGING_SENDER_ID=YOUR_FIREBASE_MESSAGING_SENDER_ID
-     VITE_APP_ID=YOUR_FIREBASE_APP_ID
-     VITE_MEASUREMENT_ID=YOUR_FIREBASE_MEASUREMENT_ID
-     ```
+VITE_JENKINS_URL=http://localhost:8080
+VITE_JENKINS_JOB_NAME=OCBC-IGNITE
+VITE_JENKINS_BUILD_NUMBER=lastCompletedBuild
+```
 
-3. **Common variables**:
-   - `VITE_API_KEY`: Your Firebase API key.
-   - `VITE_AUTH_DOMAIN`: Your Firebase authentication domain.
-   - `VITE_PROJECT_ID`: Your Firebase project ID.
-   - `VITE_STORAGE_BUCKET`: Your Firebase storage bucket.
-   - `VITE_MESSAGING_SENDER_ID`: Your Firebase messaging sender ID.
-   - `VITE_APP_ID`: Your Firebase app ID.
-   - `VITE_MEASUREMENT_ID`: Your Firebase measurement ID.
+### Screenshots
 
-## Advanced Features
+## Admin Home Page/Dashboard
+Admins can access all actions via the home page.
+![Admins can access all actions via the home page.](public/assets/readme-images/home.png)
 
-1. **Real-time Client Updates**:
-   - The app syncs client data in real-time with Firebase, ensuring the admin always has the latest information.
+## Client Management
+Search clients by ID to manage their profile.
+![Search clients by ID to manage their profile.](public/assets/readme-images/client_management.png)
 
-2. **Enhanced Form Validations**:
-   - Robust validation rules ensure accurate data entry, with instant feedback for any errors.
+### Transaction Interface
+Search clients by ID to perform transaction actions.
+![Search client by ID to perform transaction actions.](public/assets/readme-images/client_transaction.png)
 
-3. **Detailed Transaction Logs**:
-   - Each transaction is logged and displayed with details, providing a clear history of all banking activities.
+## CI/CD Dashboard
+Configured graphs are:
+- Test Execution Status Overview
+- Test Duration Trend
+- Browser Utilization / Parallel Execution
+- Failure Rate by Browser or Test Category
 
-4. **Firebase Authentication**:
-   - Secure admin login and session management using Firebase Authentication.
+![text](public/assets/readme-images/dashboard-1.png) ![text](public/assets/readme-images/dashboard-2.png) ![text](public/assets/readme-images/dashboard-3.png)
 
-## Challenges Faced
+### Additional Features
 
-1. **Handling Real-time Data**:
-   - Ensuring smooth and consistent updates across the application while interacting with Firebase’s real-time database.
+## Email Notifications
+These notifications were configured via Jenkins. It sends a email to the recepient list whenever a build succeeds or fails.
 
-2. **Complex Form Management**:
-   - Implementing form validations and handling multiple types of transactions required careful planning and coding.
+### Success Email
 
-3. **User Authentication**:
-   - Setting up secure and seamless authentication for admin access involved configuring Firebase and handling potential security issues.
+![text](public/assets/readme-images/email-success.png)
 
-## Known Bugs
+### Failure Email
 
-- **Responsive Layout**: Certain components may not render optimally on very small screens. Improvements are planned for better mobile support.
-
-- **Firebase Limits**: Occasionally, Firebase limits can cause delays in data operations during peak usage.
-
-## Future Improvements
-
-1. **Enhanced Mobile Support**:
-   - Improve the responsive design for better usability on mobile devices.
-
-2. **User Roles and Permissions**:
-   - Extend the authentication system to support different user roles and permissions.
-
-3. **Detailed Analytics and Reporting**:
-   - Add comprehensive analytics and reporting features to provide insights into bank operations and client activity.
-
-## Links
-
-- **GitHub Repository**: [Bank Manager App](https://github.com/DanielYehezkely/bank-management-react)
-- **Live Deployment**: [Netlify Link](https://dyz-bank-manager-react.netlify.app/)
-
-## Screenshots
-
-### Admin Screenshots
-
-1. **Login Admin**
-   ![Admin Dashboard](/public/assets/readme-images/readme-login.png)
-   ***
-2. **Home Page**
-   ![Client List](/public/assets/readme-images/readme-homePage.png)
-   ***
-3. **Client Manage**
-   ![Client Details](/public/assets/readme-images/readme-clientManage.png)
-   ***
-4. **Client Details**
-   ![Transaction Management](/public/assets/readme-images/readme-clientPage.png)
-   ***
-5. **Add Client**
-   ![Transaction Management](/public/assets/readme-images/readme-addClient.png)
-   ***
-6. **Transaction Management**
-   ![Transaction Management](/public/assets/readme-images/readme-transactionsPage.png)
-   ***
-7. **Transactions Modal**
-   ![Transaction Management](/public/assets/readme-images/readme-modal.png)
-   ***
+![text](public/assets/readme-images/email-fail.png)

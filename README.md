@@ -167,3 +167,13 @@ These notifications were configured via Jenkins. It sends a email to the recepie
 ### Failure Email
 
 ![text](public/assets/readme-images/email-fail.png)
+
+## Licensing
+This project is licensed under the MIT license - see the [LICENSE](LICENSE) file for details.
+
+## Developers
+- Daniella Han Xue En [@Troaxx](https://github.com/Troaxx)
+- Ong Tze Enn [@drewerll](https://github.com/user2422224)
+- Cheng Yan Yap [@Cheng-Yan694](https://github.com/Cheng-Yan694)
+- Kiruthika Perumal [@k1ruth1ka](https://github.com/k1ruth1ka)
+- Muhammad Haikal [@kall199](https://github.com/kall199)

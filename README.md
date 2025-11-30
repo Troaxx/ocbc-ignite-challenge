@@ -2,7 +2,6 @@
 
 **Forked from [DanielYehezkely/bank-management-react](https://github.com/DanielYehezkely/bank-management-react) for the OCBC Ignite Challenge.**
 
-<img src="/public/assets/images/dy-bank-high-resolution-logo-black-transparent.png" alt="App Icon" width="160" height="100">
 
 ## Problem Statement
 
@@ -77,7 +76,6 @@ The Bank Manager Application is a web-based platform designed for bank administr
    ```bash
    npm start
    ```
-   The app will run at `http://localhost:3000`.
 
 ## Testing
 

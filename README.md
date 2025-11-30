@@ -132,13 +132,13 @@ VITE_JENKINS_JOB_NAME=OCBC-IGNITE
 VITE_JENKINS_BUILD_NUMBER=lastCompletedBuild
 ```
 
-### Screenshots
+## Screenshots
 
-## Admin Home Page/Dashboard
+### Admin Home Page/Dashboard
 Admins can access all actions via the home page.
 ![Admins can access all actions via the home page.](public/assets/readme-images/home.png)
 
-## Client Management
+### Client Management
 Search clients by ID to manage their profile.
 ![Search clients by ID to manage their profile.](public/assets/readme-images/client_management.png)
 
@@ -146,7 +146,7 @@ Search clients by ID to manage their profile.
 Search clients by ID to perform transaction actions.
 ![Search client by ID to perform transaction actions.](public/assets/readme-images/client_transaction.png)
 
-## CI/CD Dashboard
+### CI/CD Dashboard
 Configured graphs are:
 - Test Execution Status Overview
 - Test Duration Trend
@@ -155,9 +155,9 @@ Configured graphs are:
 
 ![text](public/assets/readme-images/dashboard-1.png) ![text](public/assets/readme-images/dashboard-2.png) ![text](public/assets/readme-images/dashboard-3.png)
 
-### Additional Features
+## Additional Features
 
-## Email Notifications
+### Email Notifications
 These notifications were configured via Jenkins. It sends a email to the recepient list whenever a build succeeds or fails.
 
 ### Success Email
